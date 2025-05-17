@@ -4,6 +4,9 @@ import { getCurrentBranch } from "./branch";
 
 
 export async function mergeBranch(dir: string, branchName: string): Promise<string> {
+  const authorName = localStorage.getItem("global.user.name") || "Git user";
+  const authorEmail =
+    localStorage.getItem("global.user.email") || "user@gitplayground.com";
   try {
     const currentBranch = await getCurrentBranch(dir);
 
@@ -12,8 +15,8 @@ export async function mergeBranch(dir: string, branchName: string): Promise<stri
       dir,
       theirs: branchName,
       author: {
-        name: "Git Playground User",
-        email: "user@gitplayground.com",
+        name: authorName,
+        email: authorEmail,
       },
     });
 

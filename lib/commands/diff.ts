@@ -138,43 +138,44 @@ export async function diffUnstagedChangesVsLastCommit(
 }
 
 
-export async function diffCommitVsHead(
+export async function diffCommits(
   dir: string,
-  commitHash: string
+  commitHash1: string,
+  commitHash2: string
 ): Promise<string> {
   let diffResult = '';
   try {
-    // Get the current commit and HEAD (latest commit) OIDs (SHA)
-    const commitOid = await git.expandOid({ fs, dir, oid: commitHash });
-    const headOid = await git.resolveRef({ fs, dir, ref: 'HEAD' });
+    // Get the OIDs (SHAs) for both commits
+    const commitOid1 = await git.expandOid({ fs, dir, oid: commitHash1 });
+    const commitOid2 = await git.expandOid({ fs, dir, oid: commitHash2 });
 
-    // List all files in the repository
+    // List all files in the repository (to check the files in both commits)
     const filesToDiff = await git.listFiles({ fs, dir });
 
-    // compare the commit version with HEAD
+    // Compare the files between the two commits
     for (const file of filesToDiff) {
-      // Fetch the file content from the specific commit
-      const { blob: commitBlob } = await git.readBlob({
+      // Fetch the file content from the first commit (commitHash1)
+      const { blob: commitBlob1 } = await git.readBlob({
         fs,
         dir,
-        oid: commitOid,
+        oid: commitOid1,
         filepath: file,
       });
-      const committedContent = new TextDecoder().decode(commitBlob);
+      const commitContent1 = new TextDecoder().decode(commitBlob1);
 
-      // Fetch the file content from the HEAD (latest commit)
-      const { blob: headBlob } = await git.readBlob({
+      // Fetch the file content from the second commit (commitHash2)
+      const { blob: commitBlob2 } = await git.readBlob({
         fs,
         dir,
-        oid: headOid,
+        oid: commitOid2,
         filepath: file,
       });
-      const headContent = new TextDecoder().decode(headBlob);
+      const commitContent2 = new TextDecoder().decode(commitBlob2);
 
-      // Diff the two contents
-      const diff = diffLines(committedContent, headContent);
+      // Diff the two contents (using the diffLines function)
+      const diff = diffLines(commitContent1, commitContent2);
 
-      // diff result for this file to the output string
+      // Add the diff result for this file to the output string
       if (diff.length > 0) {
         diff.forEach((part) => {
           if (!part.added && !part.removed) {
@@ -183,13 +184,12 @@ export async function diffCommitVsHead(
           const symbol = part.added ? "+" : part.removed ? "-" : " ";
           diffResult += `${symbol} ${part.value} (${file})\n`;
         });
-        diffResult += '\n\n'; 
+        diffResult += '\n\n'; // Add spacing between files
       }
     }
 
-
     if (diffResult.trim().length === 0) {
-      return 'No changes between the specified commit and HEAD.';
+      return 'No changes between the specified commits.';
     }
     return diffResult;
   } catch (error) {

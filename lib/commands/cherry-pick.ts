@@ -12,14 +12,14 @@ export async function cherryPick(dir: string, commitHash: string) {
     dir,
     ours: targetBranch,
     theirs: fullOid,
-    author: { name: "Git Playground User", email: "user@gitplayground.com" },
+    author: { name: "Git User", email: "user@gitplayground.com" },
   });
 
 
   await git.commit({
     fs: fs,
     dir,
-    author: { name: "Git Playground User", email: "user@gitplayground.com" },
+    author: { name: "Git User", email: "user@gitplayground.com" },
     message: `Cherry-pick commit ${commitHash}`,
   });
 

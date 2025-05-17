@@ -1,6 +1,5 @@
 import * as git from "isomorphic-git";
 import { fs } from "../fs";
-import { diffCommitVsHead } from "./diff";
 
 export async function gitShow(
   dir: string,
@@ -27,14 +26,12 @@ export async function gitShow(
       commit.commit.author.timestamp * 1000
     ).toLocaleString();
 
-    // Concatenate commit details
     result += `commit ${commitHash}\n`;
     result += `Author: ${commitAuthor.name} <${commitAuthor.email}>\n`;
     result += `Date: ${commitDate}\n\n`;
     result += `${commitMessage}\n`;
 
-    const diff = await diffCommitVsHead(dir, commitHash)
-    result += diff
+    
 
     return result;
   } catch (error) {

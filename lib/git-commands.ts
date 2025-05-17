@@ -12,6 +12,7 @@ import { cherryPick } from "./commands/cherry-pick";
 import { diffUnstagedChangesVsLastCommit } from "./commands/diff";
 import { readFile, writeToFile } from "./filesystem/file";
 import { gitShow } from "./commands/show";
+import { setGitConfig } from "./commands/config";
 
 export const dir = "/workspace"; // root dir
 export let currentDir = "/workspace"; // Mutable for file-level commands
@@ -219,8 +220,16 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
       return "Error: No files specified";
     }
 
-    const filepath = parts[2];
-    return await addFiles(dir, filepath);
+    const filesToAdd = parts.slice(2);
+
+    const results = [];
+    for (const filepath of filesToAdd) {
+      const result = await addFiles(dir, filepath);
+      results.push(result);
+    }
+
+    // Return a message for all files added
+    return results.join("\n");
   }
 
   if (gitCommand === "diff") {
@@ -262,9 +271,37 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
   // handle git show
   if (gitCommand === "show") {
     if (parts.length > 2) {
-      return await gitShow(dir, parts[2])
+      return await gitShow(dir, parts[2]);
     }
     return await gitShow(dir);
+  }
+
+  if (gitCommand === "config") {
+    if (parts.length < 4) {
+      return "Error: Missing arguments. Usage: git config --global key value";
+    }
+
+    const isGlobal = parts.includes("--global"); // Check for the global flag
+    const configIndex = isGlobal ? 3 : 2; // Config key-value starts at index 3 if --global is present
+    const configPairs = parts.slice(configIndex); // Extract key-value pairs
+
+    const results = [];
+
+    for (let i = 0; i < configPairs.length; i += 2) {
+      const key = configPairs[i];
+      const value = configPairs[i + 1];
+
+      if (!key || !value) {
+        results.push(
+          `Error: Invalid configuration format for ${configPairs[i]}`
+        );
+      } else {
+        const result = await setGitConfig(isGlobal, key, value);
+        results.push(result);
+      }
+    }
+
+    return results.join("\n");
   }
 
   // Handle git log
