@@ -9,7 +9,7 @@ import { getCommitHistoryLog, getLog } from "./commands/log";
 import { addFiles } from "./commands/staging";
 import { initRepo } from "./commands/init";
 import { cherryPickChanges } from "./commands/cherry-pick";
-import { gitDiff } from "./commands/diff";
+import { diffUnstagedChangesVsLastCommit, gitDiff } from "./commands/diff";
 import { readFile, writeToFile } from "./filesystem/file";
 
 export const dir = "/workspace"; // root dir
@@ -223,7 +223,7 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
   }
 
   if (gitCommand === "diff") {
-    return await gitDiff(dir);
+    return await diffUnstagedChangesVsLastCommit(dir)
   }
 
   if (gitCommand === "cherry-pick") {

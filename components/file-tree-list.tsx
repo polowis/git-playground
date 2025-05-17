@@ -98,7 +98,7 @@ function FileTreeList({ fileStatuses, files }: Props) {
           <div className="font-bold text-base">{activeFilename}</div>
         </div>
 
-        <div className="flex items-center justify-between p-3 border border-border rounded-lg text-xs mb-3">
+        <div className="flex items-center justify-between p-3 border border-zinc-800 rounded-lg text-xs mb-3">
           <div><span className="font-bold">{commitHistory[0]?.commit.author.name} &nbsp;</span> {commitHistory[0]?.commit.message}</div>
           <div className="flex items-center justify-between gap-3">
             <div>{commitHistory[0]?.oid.slice(0, 7)}</div>
