@@ -14,6 +14,7 @@ import { getStatus } from "./commands/status";
 import { addFiles } from "./commands/staging";
 import { initRepo } from "./commands/init";
 import { cherryPickChanges } from "./commands/cherry-pick";
+import { gitDiff } from "./commands/diff";
 
 export const dir = "/workspace"; // root dir
 export let currentDir = "/workspace"; // Mutable for file-level commands
@@ -256,6 +257,10 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
 
     const filepath = parts[2];
     return await addFiles(dir, filepath);
+  }
+
+  if (gitCommand === "diff") {
+    return await gitDiff(dir);
   }
 
   if (gitCommand === "cherry-pick") {

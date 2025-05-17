@@ -1,26 +1,43 @@
 import React from 'react';
 
-type TokenType = 'git' | 'subcommand' | 'option' | 'string' | 'arg' | 'space';
+type TokenType =
+  | 'git'
+  | 'subcommand'
+  | 'option'
+  | 'string'
+  | 'arg'
+  | 'space'
+  | 'commit';
 
 function tokenize(input: string): { text: string; type: TokenType }[] {
   const result: { text: string; type: TokenType }[] = [];
 
-  const regex = /(".*?"|\S+|\s+)/g; // Match strings, non-whitespace words, and spaces
-
+  const regex = /(".*?"|\S+|\s+)/g;
   const matches = input.match(regex);
   if (!matches) return [];
 
   matches.forEach((word, index) => {
-    if (word.trim() === '') {
+    const trimmed = word.trim();
+    const unwrapped = trimmed.replace(/^\(|\)$/g, '');
+
+    if (trimmed === '') {
       result.push({ text: word, type: 'space' });
-    } else if (index === 0 && word === 'git') {
+
+    } else if (index === 0 && trimmed === 'git') {
       result.push({ text: word, type: 'git' });
-    } else if (index === 1 && word !== 'git') {
+
+    } else if (index === 1 && trimmed !== 'git') {
       result.push({ text: word, type: 'subcommand' });
-    } else if (/^-[a-zA-Z]/.test(word)) {
+
+    } else if (/^-[a-zA-Z]/.test(trimmed)) {
       result.push({ text: word, type: 'option' });
-    } else if (/^".*"$/.test(word)) {
+
+    } else if (/^".*"$/.test(trimmed)) {
       result.push({ text: word, type: 'string' });
+
+    } else if (/^[0-9a-f]{7,40}$/i.test(unwrapped)) {
+      result.push({ text: word, type: 'commit' });
+
     } else {
       result.push({ text: word, type: 'arg' });
     }
@@ -28,6 +45,7 @@ function tokenize(input: string): { text: string; type: TokenType }[] {
 
   return result;
 }
+
 
 function getColor(type: TokenType): string {
   switch (type) {
@@ -39,6 +57,8 @@ function getColor(type: TokenType): string {
       return 'orange';
     case 'string':
       return 'green';
+    case 'commit':
+      return 'peachpuff';
     case 'arg':
       return 'gray';
     case 'space':

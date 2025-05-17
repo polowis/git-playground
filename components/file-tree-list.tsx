@@ -1,7 +1,7 @@
 import React from "react";
 import { useFolderContext } from "./context/FolderContext";
 import { dir } from "@/lib/git-commands";
-import { FSEntry} from "@/lib/fs";
+import { FSEntry } from "@/lib/fs";
 import { ChevronLeftIcon, FileIcon, FolderIcon } from "lucide-react";
 
 const collator = new Intl.Collator(undefined, {
@@ -10,11 +10,11 @@ const collator = new Intl.Collator(undefined, {
 });
 
 interface Props {
-  fileStatuses: Record<string, { status: string; color: string }>
-  files: FSEntry[]
+  fileStatuses: Record<string, { status: string; color: string }>;
+  files: FSEntry[];
 }
 
-function FileTreeList({fileStatuses, files}: Props) {
+function FileTreeList({ fileStatuses, files }: Props) {
   const { currentDir, folderHistory, setFolderHistory, setCurrentDir } =
     useFolderContext();
 
@@ -32,7 +32,6 @@ function FileTreeList({fileStatuses, files}: Props) {
     setCurrentDir(`${currentDir}/${file.name}`);
     setFolderHistory((prev) => [...prev, `${currentDir}/${file.name}`]);
   };
-
 
   return (
     <>
@@ -62,10 +61,15 @@ function FileTreeList({fileStatuses, files}: Props) {
             })
             .filter((f) => f.name !== ".gt")
             .map((file) => {
-              const fileStatus =
-                fileStatuses[
-                  `${currentDir.replace(dir + "/", "")}/${file.name}`
-                ];
+              let fileStatus;
+              if (currentDir === dir) {
+                fileStatus = fileStatuses[file.name];
+              } else {
+                fileStatus =
+                  fileStatuses[
+                    `${currentDir.replace(dir + "/", "")}/${file.name}`
+                  ];
+              }
 
               return (
                 <li
