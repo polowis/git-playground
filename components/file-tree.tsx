@@ -12,15 +12,16 @@ import { isGitRepository } from "@/lib/git-utils";
 import { useFolderContext } from "./context/FolderContext";
 import FileTreeList from "./file-tree-list";
 import RepoFileStats from "./repo-file-stats";
-import { getStatus } from "@/lib/commands/status";
+import { useRepoContext } from "./context/RepoContext";
 
 export default function FileTree() {
   const [files, setFiles] = useState<FSEntry[]>([]);
   const [isRepo, setIsRepo] = useState(false);
   const [currentBranch, setCurrentBranch] = useState("");
-  const [statusMatrix, setStatusMatrix] = useState<any[]>([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const { currentDir } = useFolderContext();
+  const {fileStatuses, triggerRefresh} = useRepoContext()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,8 +42,7 @@ export default function FileTree() {
           setCurrentBranch(branch);
 
           // Get status matrix
-          const status = await getStatus(dir);
-          setStatusMatrix(status);
+          triggerRefresh()
         }
       } catch (error) {
         console.error("Error fetching file tree data:", error);
@@ -62,41 +62,6 @@ export default function FileTree() {
       </div>
     );
   }
-
-  // Process status matrix to get file statuses
-  const fileStatuses: Record<string, { status: string; color: string }> = {};
-
-  statusMatrix.forEach((entry) => {
-    const [filepath, headStatus, workdirStatus, stageStatus] = entry;
-
-    let status = "";
-    let color = "";
-
-    // File is staged (added)
-    if (headStatus === 0 && stageStatus === 2) {
-      status = "Staged";
-      color = "text-green-500";
-    }
-    // File is modified and staged
-    else if (headStatus === 1 && workdirStatus === 2 && stageStatus === 2) {
-      status = "Staged";
-      color = "text-green-500";
-    }
-    // File is modified but not staged
-    else if (headStatus === 1 && workdirStatus === 2 && stageStatus === 1) {
-      status = "Modified";
-      color = "text-yellow-500";
-    }
-    // File is untracked
-    else if (headStatus === 0 && workdirStatus === 2 && stageStatus === 0) {
-      status = "Untracked";
-      color = "text-red-500";
-    }
-
-    if (status) {
-      fileStatuses[filepath as string] = { status, color };
-    }
-  });
 
   return (
     <div className="bg-zinc-950 rounded-lg p-4 h-full overflow-auto">

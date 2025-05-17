@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFolderContext } from "./context/FolderContext";
 import { dir } from "@/lib/git-commands";
 import { FSEntry } from "@/lib/fs";
 import { ChevronLeftIcon, FileIcon, FolderIcon } from "lucide-react";
+import { Textarea } from "./ui/textarea";
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
@@ -17,6 +18,8 @@ interface Props {
 function FileTreeList({ fileStatuses, files }: Props) {
   const { currentDir, folderHistory, setFolderHistory, setCurrentDir } =
     useFolderContext();
+  
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const handlePop = () => {
     if (folderHistory.length === 0) return;
@@ -32,6 +35,14 @@ function FileTreeList({ fileStatuses, files }: Props) {
     setCurrentDir(`${currentDir}/${file.name}`);
     setFolderHistory((prev) => [...prev, `${currentDir}/${file.name}`]);
   };
+
+  if(isEditing) {
+    return (
+      <Textarea className="bg-zinc-950">
+
+      </Textarea>
+    )
+  }
 
   return (
     <>
@@ -78,7 +89,7 @@ function FileTreeList({ fileStatuses, files }: Props) {
                   onClick={
                     file.stats.type === "dir"
                       ? () => changeDirectory(file)
-                      : () => {}
+                      : () => {setIsEditing(true)}
                   }
                 >
                   <div className="flex items-center gap-2">

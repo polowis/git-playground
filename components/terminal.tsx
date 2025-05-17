@@ -13,6 +13,7 @@ import { useTerminal } from "./context/TerminalContext";
 import { ScrollArea } from "./ui/scroll-area";
 import GitSyntaxHighlighter from "./git-syntax-highlighter";
 import '../styles/terminal.css'
+import { useRepoContext } from "./context/RepoContext";
 
 interface TerminalProps {
   onCommand: (command: string) => Promise<string>;
@@ -32,6 +33,7 @@ const Terminal = forwardRef(function Terminal(
   const [isProcessing, setIsProcessing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const {triggerRefresh} = useRepoContext()
 
   const inputLines = lines.filter((line) => line.type === "input");
 
@@ -131,6 +133,7 @@ const Terminal = forwardRef(function Terminal(
         setTimeout(() => {
           focusInput();
         }, 100);
+        triggerRefresh();
       }
     }
   };
