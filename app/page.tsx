@@ -17,6 +17,12 @@ import { TerminalProvider } from "@/components/context/TerminalContext";
 import { FolderProvider } from "@/components/context/FolderContext";
 import { removeGitFolder } from "@/lib/git-utils";
 import { RepoProvider } from "@/components/context/RepoContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function GitPlayground() {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
@@ -177,19 +183,13 @@ export default function GitPlayground() {
               </div>
             </div>
 
-            {showHelp && (
-              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                <div className="bg-zinc-900 border border-zinc-700 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-auto p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">Git Command Help</h2>
-                    <Button variant="ghost" size="sm" onClick={toggleHelp}>
-                      Close
-                    </Button>
-                  </div>
-                  <CommandHelp />
-                </div>
-              </div>
-            )}
+            <Dialog open={showHelp} onOpenChange={setShowHelp}>
+              <DialogTrigger></DialogTrigger>
+              <DialogContent className="max-w-lg">
+                <DialogTitle>Command Help</DialogTitle>
+                <CommandHelp />
+              </DialogContent>
+            </Dialog>
 
             <Toaster />
           </main>

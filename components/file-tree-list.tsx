@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { useFolderContext } from "./context/FolderContext";
 import { dir } from "@/lib/git-commands";
 import { FSEntry } from "@/lib/fs";
-import { ChevronLeftIcon, FileIcon, FolderIcon } from "lucide-react";
-import { Textarea } from "./ui/textarea";
+import { ChevronLeftIcon, FileIcon, FolderIcon, SaveIcon } from "lucide-react";
+import CodeMirrorEditor from "./libs/CodeEditor";
+import { Button } from "./ui/button";
+import { readFile, writeToFile } from "@/lib/filesystem/file";
+import { useToast } from "@/hooks/use-toast";
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
@@ -18,8 +21,11 @@ interface Props {
 function FileTreeList({ fileStatuses, files }: Props) {
   const { currentDir, folderHistory, setFolderHistory, setCurrentDir } =
     useFolderContext();
-  
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [fileContent, setFileContent] = useState<string>("");
+  const [activeFilename, setActiveFilename] = useState<string>("");
+  const { toast } = useToast();
 
   const handlePop = () => {
     if (folderHistory.length === 0) return;
@@ -36,12 +42,66 @@ function FileTreeList({ fileStatuses, files }: Props) {
     setFolderHistory((prev) => [...prev, `${currentDir}/${file.name}`]);
   };
 
-  if(isEditing) {
-    return (
-      <Textarea className="bg-zinc-950">
+  const openFile = async (filename: string) => {
+    try {
+      const content = await readFile(currentDir, filename);
+      setFileContent(content);
+      setActiveFilename(filename);
+    } catch {
+      toast({
+        description: "An error occured while reading the file",
+        variant: "destructive",
+      });
+    }
+  };
 
-      </Textarea>
-    )
+  const saveFile = async () => {
+    try {
+      await writeToFile(currentDir, activeFilename, fileContent);
+      closeFile();
+      toast({
+        description: "File updated",
+      });
+    } catch {
+      toast({
+        description: "An error occured while saving the file",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const closeFile = () => {
+    setFileContent("");
+    setActiveFilename("");
+    setIsEditing(false);
+  };
+
+  if (isEditing) {
+    return (
+      <div>
+        <div className="mb-3 flex justify-between items-center">
+          <div
+            className="flex items-center gap-1 cursor-pointer hover:underline"
+            onClick={closeFile}
+          >
+            <ChevronLeftIcon />
+            <div>Back</div>
+          </div>
+          <div className="font-bold text-base">{activeFilename}</div>
+        </div>
+
+        <CodeMirrorEditor
+          value={fileContent}
+          filename={activeFilename}
+          onChange={setFileContent}
+        ></CodeMirrorEditor>
+        <div className="mt-3">
+          <Button variant="outline" onClick={saveFile} className="py-0 px-3 h-9 hover:bg-accent">
+            <SaveIcon /> Save
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -89,7 +149,10 @@ function FileTreeList({ fileStatuses, files }: Props) {
                   onClick={
                     file.stats.type === "dir"
                       ? () => changeDirectory(file)
-                      : () => {setIsEditing(true)}
+                      : () => {
+                          setIsEditing(true);
+                          openFile(file.name);
+                        }
                   }
                 >
                   <div className="flex items-center gap-2">
