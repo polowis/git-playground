@@ -5,7 +5,7 @@ import { commitChanges } from "./commands/commit";
 import { createBranch, listBranches } from "./commands/branch";
 import { checkoutBranch } from "./commands/checkout";
 import { formatStatus, getHelpText, isGitRepository } from "./git-utils";
-import { getLog } from "./commands/log";
+import { getCommitHistoryLog, getLog } from "./commands/log";
 import { addFiles } from "./commands/staging";
 import { initRepo } from "./commands/init";
 import { cherryPickChanges } from "./commands/cherry-pick";
@@ -260,6 +260,9 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
 
   // Handle git log
   if (gitCommand === "log") {
+    if (parts.length > 2) {
+      return await getCommitHistoryLog(dir, parts[2])
+    }
     return await getLog(dir);
   }
 

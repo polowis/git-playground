@@ -4,6 +4,26 @@ import FS from "@isomorphic-git/lightning-fs"
 export const pfs = new FS("gitPlaygroundFS")
 export const fs = pfs.promises
 
+const code = "const now = new Date();\n" +
+"const hour = now.getHours();\n\n" +
+"let greeting = '';\n" +
+"if (hour < 12) {\n" +
+"\tgreeting = 'Good morning';\n" +
+"} else if (hour < 18) {\n" +
+"\tgreeting = 'Good afternoon';\n" +
+"} else {\n" +
+"\tgreeting = 'Good evening';\n" +
+"}\n" +
+"console.log(greeting + '!');\n\n" +
+"const randomNum = Math.floor(Math.random() * 100) + 1;\n" +
+"console.log('Your lucky number is: ' + randomNum);\n\n" +
+"function reverseString(str) {\n" +
+"\treturn str.split('').reverse().join('');\n" +
+"}\n" +
+"const original = 'JavaScript';\n" +
+"const reversed = reverseString(original);\n" +
+"console.log('Reversed: ' + reversed);";
+
 // Initialize the file system with some example files
 export async function initializeFileSystem() {
   try {
@@ -16,7 +36,7 @@ export async function initializeFileSystem() {
 
     // Create some example files
     await fs.writeFile("/workspace/README.md", "# Git Playground\n\nWelcome to the Git Playground!")
-    await fs.writeFile("/workspace/example.js", 'console.log("Hello, Git!");')
+    await fs.writeFile("/workspace/example.js", 'console.log("Hello, Git!");\n\n' + code)
   } catch (error) {
     console.error("Error initializing file system:", error)
   }

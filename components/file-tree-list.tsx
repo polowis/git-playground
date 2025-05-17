@@ -1,12 +1,14 @@
 import React, { useState } from "react";
+import * as git from "isomorphic-git";
 import { useFolderContext } from "./context/FolderContext";
 import { dir } from "@/lib/git-commands";
 import { FSEntry } from "@/lib/fs";
-import { ChevronLeftIcon, FileIcon, FolderIcon, SaveIcon } from "lucide-react";
+import { ChevronLeftIcon, FileIcon, FolderIcon, HistoryIcon, SaveIcon } from "lucide-react";
 import CodeMirrorEditor from "./libs/CodeEditor";
 import { Button } from "./ui/button";
 import { readFile, writeToFile } from "@/lib/filesystem/file";
 import { useToast } from "@/hooks/use-toast";
+import { getFileCommitHistory } from "@/lib/commands/log";
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
@@ -25,6 +27,7 @@ function FileTreeList({ fileStatuses, files }: Props) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [fileContent, setFileContent] = useState<string>("");
   const [activeFilename, setActiveFilename] = useState<string>("");
+  const [commitHistory, setCommitHistory] = useState<(git.ReadCommitResult | null)[]>([]);
   const { toast } = useToast();
 
   const handlePop = () => {
@@ -47,6 +50,10 @@ function FileTreeList({ fileStatuses, files }: Props) {
       const content = await readFile(currentDir, filename);
       setFileContent(content);
       setActiveFilename(filename);
+      const history = await getFileCommitHistory(dir, `${currentDir}/${filename}`.replace(dir + '/', ''))
+      if(history[0] !== null) { // prevent null commit
+        setCommitHistory(history)
+      }
     } catch {
       toast({
         description: "An error occured while reading the file",
@@ -74,6 +81,7 @@ function FileTreeList({ fileStatuses, files }: Props) {
     setFileContent("");
     setActiveFilename("");
     setIsEditing(false);
+    setCommitHistory([])
   };
 
   if (isEditing) {
@@ -90,13 +98,25 @@ function FileTreeList({ fileStatuses, files }: Props) {
           <div className="font-bold text-base">{activeFilename}</div>
         </div>
 
+        <div className="flex items-center justify-between p-3 border border-border rounded-lg text-xs mb-3">
+          <div><span className="font-bold">{commitHistory[0]?.commit.author.name} &nbsp;</span> {commitHistory[0]?.commit.message}</div>
+          <div className="flex items-center justify-between gap-3">
+            <div>{commitHistory[0]?.oid.slice(0, 7)}</div>
+            <div className="flex items-center gap-1"><HistoryIcon/>{commitHistory.length} Commits</div>
+          </div>
+        </div>
+
         <CodeMirrorEditor
           value={fileContent}
           filename={activeFilename}
           onChange={setFileContent}
         ></CodeMirrorEditor>
         <div className="mt-3">
-          <Button variant="outline" onClick={saveFile} className="py-0 px-3 h-9 hover:bg-accent">
+          <Button
+            variant="outline"
+            onClick={saveFile}
+            className="py-0 px-3 h-9 hover:bg-accent"
+          >
             <SaveIcon /> Save
           </Button>
         </div>
