@@ -1,12 +1,16 @@
 import { getStatus } from "@/lib/commands/status";
+import { FSEntry, listFiles } from "@/lib/fs";
 import { dir } from "@/lib/git-commands";
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import { useFolderContext } from "../FolderContext";
 
 interface RepoContextType {
   statusMatrix: any[];
   setStatusMatrix: React.Dispatch<React.SetStateAction<any[]>>;
   fileStatuses: Record<string, { status: string; color: string }>;
   triggerRefresh: () => void;
+  files: FSEntry[];
+  loadFiles: () => void;
 }
 
 const RepoContext = createContext<RepoContextType | undefined>(undefined);
@@ -28,12 +32,22 @@ export const RepoProvider = ({ children }: RepoProviderProps) => {
   const [fileStatuses, setFileStatuses] = useState<
     Record<string, { status: string; color: string }>
   >({});
+  const [files, setFiles] = useState<FSEntry[]>([]);
+  const { currentDir } = useFolderContext();
+
+  const loadFiles = async () => {
+    const fileList = await listFiles(currentDir);
+    setFiles(fileList);
+  };
 
   const triggerRefresh = async () => {
     const status = await getStatus(dir);
     setStatusMatrix(status);
 
-    const updatedFileStatuses: Record<string, { status: string; color: string }> = { ...fileStatuses };
+    const updatedFileStatuses: Record<
+      string,
+      { status: string; color: string }
+    > = { ...fileStatuses };
 
     status.forEach((entry) => {
       const [filepath, headStatus, workdirStatus, stageStatus] = entry;
@@ -72,7 +86,14 @@ export const RepoProvider = ({ children }: RepoProviderProps) => {
 
   return (
     <RepoContext.Provider
-      value={{ statusMatrix, setStatusMatrix, fileStatuses, triggerRefresh }}
+      value={{
+        statusMatrix,
+        setStatusMatrix,
+        fileStatuses,
+        triggerRefresh,
+        files,
+        loadFiles,
+      }}
     >
       {children}
     </RepoContext.Provider>

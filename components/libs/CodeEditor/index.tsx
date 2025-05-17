@@ -9,7 +9,7 @@ import "./style.css";
 
 export const languageExtensions = {
   js: javascript({ jsx: true }),
-  python: python(),
+  py: python(),
 };
 
 interface CodeMirrorEditorProps {

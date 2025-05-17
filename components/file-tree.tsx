@@ -13,13 +13,12 @@ import { useRepoContext } from "./context/RepoContext";
 import { ScrollArea } from "./ui/scroll-area";
 
 export default function FileTree() {
-  const [files, setFiles] = useState<FSEntry[]>([]);
   const [isRepo, setIsRepo] = useState(false);
   const [currentBranch, setCurrentBranch] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
   const { currentDir } = useFolderContext();
-  const { fileStatuses, triggerRefresh } = useRepoContext();
+  const { fileStatuses, triggerRefresh, loadFiles, files } = useRepoContext();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,8 +30,7 @@ export default function FileTree() {
         setIsRepo(repoStatus);
 
         // Get files
-        const fileList = await listFiles(currentDir);
-        setFiles(fileList);
+        loadFiles();
 
         if (repoStatus) {
           // Get current branch

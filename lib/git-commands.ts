@@ -2,10 +2,7 @@ import * as git from "isomorphic-git";
 import { fs } from "./fs";
 import { mergeBranch } from "./commands/merge";
 import { commitChanges } from "./commands/commit";
-import {
-  createBranch,
-  listBranches,
-} from "./commands/branch";
+import { createBranch, listBranches } from "./commands/branch";
 import { checkoutBranch } from "./commands/checkout";
 import { formatStatus, getHelpText, isGitRepository } from "./git-utils";
 import { getLog } from "./commands/log";
@@ -17,7 +14,6 @@ import { readFile, writeToFile } from "./filesystem/file";
 
 export const dir = "/workspace"; // root dir
 export let currentDir = "/workspace"; // Mutable for file-level commands
-
 
 // Execute a Git command
 export async function executeGitCommand(commandLine: string): Promise<string> {
@@ -122,20 +118,74 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
     }
 
     const filename = parts[1];
-    return await readFile(currentDir, filename)
+    return await readFile(currentDir, filename);
   }
 
   if (command === "rm") {
     if (parts.length < 2) {
-      return "Error: Missing filename";
+      return "Error: Missing filename or folder";
     }
 
-    const filename = parts[1];
+    const flags = parts[1].startsWith("-") ? parts[1].slice(1) : "";
+    const targetIndex = parts[1].startsWith("-") ? 2 : 1;
+    const target = parts[targetIndex];
+    const fullPath = `${currentDir}/${target}`;
+
+    if (target.endsWith(".git")) {
+      return "Cannot delete .git folder. Please use reset button instead";
+    }
+
+    const recursive = flags.includes("r");
+    const force = flags.includes("f");
+    const verbose = flags.includes("v");
+    const interactive = flags.includes("i");
+
+    async function confirmDeletion(path: string) {
+      if (!interactive) return true;
+      return confirm(`Delete ${path}?`); // Simulate with window.confirm() or similar
+    }
+
+    async function rmrf(path: string, relativePath: string) {
+      try {
+        const stat = await fs.lstat(path);
+
+        if (stat.type === "dir") {
+          if (!recursive) {
+            return `Error: '${target}' is a directory. Use -r to delete folders.`;
+          }
+          const entries = await fs.readdir(path);
+          for (const entry of entries) {
+            await rmrf(`${path}/${entry}`, `${relativePath}/${entry}`);
+          }
+          if (await confirmDeletion(path)) {
+            await fs.rmdir(path);
+            if (verbose) console.log(`Removed directory: ${path}`);
+          }
+        } else {
+          if (await confirmDeletion(path)) {
+            await fs.unlink(path);
+            if (verbose) console.log(`Removed file: ${path}`);
+            try {              
+              await git.remove({ fs, dir: dir, filepath: relativePath });
+            } catch (err) {
+              console.error(err);
+              if (!force) throw err; // Swallow error if force is enabled
+            }
+          }
+        }
+      } catch (error) {
+        if (!force) {
+          throw error;
+        }
+      }
+    }
+
     try {
-      await fs.unlink(`${currentDir}/${filename}`);
-      return `Removed file: ${filename}`;
+      const relativePath = fullPath.replace(dir + "/", "");
+      await rmrf(fullPath, relativePath);
+      return verbose ? `Removed: ${target}` : "";
     } catch (error) {
-      return `Error: File '${filename}' does not exist or cannot be deleted`;
+      return `Error: '${target}' could not be deleted. ${error}`;
     }
   }
 
