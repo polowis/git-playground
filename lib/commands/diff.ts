@@ -136,3 +136,64 @@ export async function diffUnstagedChangesVsLastCommit(
     return 'error during diffing'
   }
 }
+
+
+export async function diffCommitVsHead(
+  dir: string,
+  commitHash: string
+): Promise<string> {
+  let diffResult = '';
+  try {
+    // Get the current commit and HEAD (latest commit) OIDs (SHA)
+    const commitOid = await git.expandOid({ fs, dir, oid: commitHash });
+    const headOid = await git.resolveRef({ fs, dir, ref: 'HEAD' });
+
+    // List all files in the repository
+    const filesToDiff = await git.listFiles({ fs, dir });
+
+    // compare the commit version with HEAD
+    for (const file of filesToDiff) {
+      // Fetch the file content from the specific commit
+      const { blob: commitBlob } = await git.readBlob({
+        fs,
+        dir,
+        oid: commitOid,
+        filepath: file,
+      });
+      const committedContent = new TextDecoder().decode(commitBlob);
+
+      // Fetch the file content from the HEAD (latest commit)
+      const { blob: headBlob } = await git.readBlob({
+        fs,
+        dir,
+        oid: headOid,
+        filepath: file,
+      });
+      const headContent = new TextDecoder().decode(headBlob);
+
+      // Diff the two contents
+      const diff = diffLines(committedContent, headContent);
+
+      // diff result for this file to the output string
+      if (diff.length > 0) {
+        diff.forEach((part) => {
+          if (!part.added && !part.removed) {
+            return;
+          }
+          const symbol = part.added ? "+" : part.removed ? "-" : " ";
+          diffResult += `${symbol} ${part.value} (${file})\n`;
+        });
+        diffResult += '\n\n'; 
+      }
+    }
+
+
+    if (diffResult.trim().length === 0) {
+      return 'No changes between the specified commit and HEAD.';
+    }
+    return diffResult;
+  } catch (error) {
+    console.error('Error during diffing:', error);
+    return 'Error during diffing';
+  }
+}

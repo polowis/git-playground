@@ -8,9 +8,10 @@ import { formatStatus, getHelpText, isGitRepository } from "./git-utils";
 import { getCommitHistoryLog, getLog } from "./commands/log";
 import { addFiles } from "./commands/staging";
 import { initRepo } from "./commands/init";
-import { cherryPickChanges } from "./commands/cherry-pick";
-import { diffUnstagedChangesVsLastCommit, gitDiff } from "./commands/diff";
+import { cherryPick } from "./commands/cherry-pick";
+import { diffUnstagedChangesVsLastCommit } from "./commands/diff";
 import { readFile, writeToFile } from "./filesystem/file";
+import { gitShow } from "./commands/show";
 
 export const dir = "/workspace"; // root dir
 export let currentDir = "/workspace"; // Mutable for file-level commands
@@ -165,7 +166,7 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
           if (await confirmDeletion(path)) {
             await fs.unlink(path);
             if (verbose) console.log(`Removed file: ${path}`);
-            try {              
+            try {
               await git.remove({ fs, dir: dir, filepath: relativePath });
             } catch (err) {
               console.error(err);
@@ -223,7 +224,7 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
   }
 
   if (gitCommand === "diff") {
-    return await diffUnstagedChangesVsLastCommit(dir)
+    return await diffUnstagedChangesVsLastCommit(dir);
   }
 
   if (gitCommand === "cherry-pick") {
@@ -236,7 +237,7 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
     const commitHash = parts[2];
 
     try {
-      return await cherryPickChanges(dir, commitHash);
+      return await cherryPick(dir, commitHash);
     } catch (error) {
       return `Error: Failed to cherry-pick commit ${commitHash}. ${error}`;
     }
@@ -258,10 +259,18 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
     return await commitChanges(dir, message);
   }
 
+  // handle git show
+  if (gitCommand === "show") {
+    if (parts.length > 2) {
+      return await gitShow(dir, parts[2])
+    }
+    return await gitShow(dir);
+  }
+
   // Handle git log
   if (gitCommand === "log") {
     if (parts.length > 2) {
-      return await getCommitHistoryLog(dir, parts[2])
+      return await getCommitHistoryLog(dir, parts[2]);
     }
     return await getLog(dir);
   }

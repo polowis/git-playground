@@ -35,6 +35,7 @@ const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
   return (
     <div>
       <CodeMirror
+        autoFocus
         value={value}
         onChange={(editorValue) => onChange(editorValue)}
         theme="dark"
@@ -43,7 +44,7 @@ const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
             ? [getLanguageExtension(filename)]
             : undefined
         }
-      />
+        />
     </div>
   );
 };
