@@ -11,10 +11,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { RefreshCcw, HelpCircle, BookOpen } from "lucide-react";
 import CommandHelp from "@/components/command-help";
-import { executeGitCommand } from "@/lib/git-commands";
+import { dir, executeGitCommand } from "@/lib/git-commands";
 import { initializeFileSystem } from "@/lib/fs";
 import { TerminalProvider } from "@/components/context/TerminalContext";
 import { FolderProvider } from "@/components/context/FolderContext";
+import { removeGitFolder } from "@/lib/git-utils";
 
 export default function GitPlayground() {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
@@ -63,6 +64,7 @@ export default function GitPlayground() {
     try {
       await initializeFileSystem();
       setCommandHistory([]);
+      removeGitFolder(dir)
       toast({
         title: "Playground Reset",
         description: "Git playground has been reset to initial state",

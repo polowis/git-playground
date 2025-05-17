@@ -12,6 +12,7 @@ import {
 import { useTerminal } from "./context/TerminalContext";
 import { ScrollArea } from "./ui/scroll-area";
 import GitSyntaxHighlighter from "./git-syntax-highlighter";
+import '../styles/terminal.css'
 
 interface TerminalProps {
   onCommand: (command: string) => Promise<string>;
@@ -149,21 +150,21 @@ const Terminal = forwardRef(function Terminal(
   return (
     <div
       ref={terminalRef}
-      className="bg-zinc-950 rounded-lg p-4 h-full font-mono text-sm"
+      className="terminal-container bg-zinc-950 rounded-lg p-4 h-full font-mono text-sm"
       onClick={focusInput}
     >
       <ScrollArea className="h-full overflow-auto">
         {lines.map((line, index) => (
-          <div key={index} className="mb-1">
+          <div key={index} className="mb-1 terminal-line">
             {line.type === "input" ? (
-              <div className="flex">
+              <div className="flex terminal-input">
                 <span className="text-green-500 mr-2">$</span>
                 <span>
                   <GitSyntaxHighlighter command={line.content} />
                 </span>
               </div>
             ) : (
-              <div className="pl-4 text-zinc-400">
+              <div className="pl-4 text-zinc-400 terminal-output">
                 <GitSyntaxHighlighter command={line.content} />
               </div>
             )}
@@ -177,7 +178,7 @@ const Terminal = forwardRef(function Terminal(
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
-            className="bg-transparent outline-none flex-1 text-zinc-100"
+            className="bg-transparent outline-none flex-1 text-zinc-100 terminal-input"
             autoFocus
             disabled={isProcessing}
           />

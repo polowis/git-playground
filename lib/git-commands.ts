@@ -1,47 +1,27 @@
 import * as git from "isomorphic-git";
 import { fs } from "./fs";
-import type { GitState } from "./git-state";
 import { mergeBranch } from "./commands/merge";
 import { commitChanges } from "./commands/commit";
-import { createBranch, getCurrentBranch, listBranches } from "./commands/branch";
+import {
+  createBranch,
+  getCurrentBranch,
+  listBranches,
+} from "./commands/branch";
 import { checkoutBranch } from "./commands/checkout";
-import { isGitRepository } from "./git-utils";
-
-interface CommandResult {
-  newState: GitState;
-  output: string;
-}
+import { getHelpText, isGitRepository } from "./git-utils";
+import { getLog } from "./commands/log";
+import { getStatus } from "./commands/status";
+import { addFiles } from "./commands/staging";
+import { initRepo } from "./commands/init";
+import { cherryPickChanges } from "./commands/cherry-pick";
 
 export const dir = "/workspace"; // root dir
 export let currentDir = "/workspace"; // Mutable for file-level commands
 
-// Initialize a Git repository
-export async function initRepo(): Promise<string> {
-  try {
-    await git.init({ fs, dir });
-    return "Initialized empty Git repository";
-  } catch (error) {
-    console.error("Error initializing repository:", error);
-    return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
-  }
-}
-
-
-// Get repository status
-export async function getStatus(): Promise<git.StatusRow[]> {
-  try {
-    const statusMatrix = await git.statusMatrix({ fs, dir });
-    return statusMatrix;
-  } catch (error) {
-    console.error("Error getting status:", error);
-    throw error;
-  }
-}
-
 // Format status for display
 export async function formatStatus(): Promise<string> {
   try {
-    const statusMatrix = await getStatus();
+    const statusMatrix = await getStatus(dir);
     const isRepo = await isGitRepository(dir);
 
     if (!isRepo) {
@@ -108,90 +88,6 @@ export async function formatStatus(): Promise<string> {
   } catch (error) {
     console.error("Error formatting status:", error);
     return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
-  }
-}
-
-// Add files to staging area
-export async function addFiles(filepath: string): Promise<string> {
-  try {
-    if (filepath === ".") {
-      // Add all files
-      const statusMatrix = await getStatus();
-      for (const [file] of statusMatrix) {
-        await git.add({ fs, dir, filepath: file as string });
-      }
-      return "Added all files to staging area";
-    } else {
-      // Add specific file
-      await git.add({ fs, dir, filepath });
-      return `Added '${filepath}' to staging area`;
-    }
-  } catch (error) {
-    console.error("Error adding files:", error);
-    return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
-  }
-}
-
-// Get commit log
-export async function getLog(): Promise<string> {
-  try {
-    const commits = await git.log({ fs, dir });
-
-    if (commits.length === 0) {
-      return "No commits yet";
-    }
-
-    let output = "";
-
-    for (const commit of commits) {
-      output += `commit ${commit.oid}\n`;
-      output += `Author: ${commit.commit.author.name} <${commit.commit.author.email}>\n`;
-      output += `Date: ${new Date(
-        commit.commit.author.timestamp * 1000
-      ).toLocaleString()}\n\n`;
-      output += `    ${commit.commit.message}\n\n`;
-    }
-
-    return output;
-  } catch (error) {
-    console.error("Error getting log:", error);
-    return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
-  }
-}
-
-
-// Get repository visualization data
-export async function getVisualizationData() {
-  try {
-    const commits = await git.log({ fs, dir });
-    const branches = await git.listBranches({ fs, dir });
-    const currentBranch = await getCurrentBranch(dir);
-
-    // Get the commit each branch points to
-    const branchHeads: Record<string, string> = {};
-    for (const branch of branches) {
-      try {
-        const oid = await git.resolveRef({ fs, dir, ref: branch });
-        branchHeads[branch] = oid;
-      } catch (error) {
-        console.error(`Error resolving ref for branch ${branch}:`, error);
-      }
-    }
-
-    return {
-      commits,
-      branches,
-      branchHeads,
-      currentBranch,
-    };
-  } catch (error) {
-    console.error("Error getting visualization data:", error);
-    return {
-      commits: [],
-      branches: [],
-      branchHeads: {},
-      currentBranch: "",
-    };
   }
 }
 
@@ -338,7 +234,7 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
 
   // Handle git init
   if (gitCommand === "init") {
-    return await initRepo();
+    return await initRepo(dir);
   }
 
   // Check if git is initialized for all other commands
@@ -359,7 +255,23 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
     }
 
     const filepath = parts[2];
-    return await addFiles(filepath);
+    return await addFiles(dir, filepath);
+  }
+
+  if (gitCommand === "cherry-pick") {
+    // Check if we have a commit hash (the commit ID to cherry-pick)
+    if (parts.length < 2) {
+      return "Error: Invalid or missing commit hash. Use: git cherry-pick <commit>";
+    }
+
+    // Extract the commit hash (should be the second argument)
+    const commitHash = parts[2];
+
+    try {
+      return await cherryPickChanges(dir, commitHash);
+    } catch (error) {
+      return `Error: Failed to cherry-pick commit ${commitHash}. ${error}`;
+    }
   }
 
   // Handle git commit
@@ -380,7 +292,7 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
 
   // Handle git log
   if (gitCommand === "log") {
-    return await getLog();
+    return await getLog(dir);
   }
 
   // Handle git branch
@@ -435,35 +347,4 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
   }
 
   return `Unknown git command: ${gitCommand}`;
-}
-
-function getHelpText(): string {
-  return `
-Available commands:
-
-Git Commands:
-  git init                      Initialize a new repository
-  git status                    Show repository status
-  git add <file>                Add file to staging area
-  git add .                     Add all files to staging area
-  git commit -m "message"       Create a new commit
-  git log                       Show commit history
-  git branch                    List branches
-  git branch <name>             Create a new branch
-  git checkout <branch>         Switch to a branch
-  git merge <branch>            Merge a branch into current branch
-
-File Operations:
-  touch <file>                  Create a new empty file
-  echo "content" > <file>       Create/overwrite file with content
-  cat <file>                    Display file content
-  rm <file>                     Remove a file
-  ls                            List files
-  mkdir                         Create a directory
-  cd                            Change current directory
-
-Other:
-  clear                         Clear the terminal
-  help                          Show this help message
-`.trim();
 }

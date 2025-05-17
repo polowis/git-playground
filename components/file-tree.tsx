@@ -6,12 +6,13 @@ import {
   GitBranch,
 } from "lucide-react";
 import { FSEntry, listFiles } from "@/lib/fs";
-import { dir, getStatus } from "@/lib/git-commands";
+import { dir } from "@/lib/git-commands";
 import { getCurrentBranch } from "@/lib/commands/branch";
 import { isGitRepository } from "@/lib/git-utils";
 import { useFolderContext } from "./context/FolderContext";
 import FileTreeList from "./file-tree-list";
 import RepoFileStats from "./repo-file-stats";
+import { getStatus } from "@/lib/commands/status";
 
 export default function FileTree() {
   const [files, setFiles] = useState<FSEntry[]>([]);
@@ -40,7 +41,7 @@ export default function FileTree() {
           setCurrentBranch(branch);
 
           // Get status matrix
-          const status = await getStatus();
+          const status = await getStatus(dir);
           setStatusMatrix(status);
         }
       } catch (error) {

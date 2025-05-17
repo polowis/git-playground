@@ -1,7 +1,8 @@
 "use client"
 
+import { dir } from "@/lib/git-commands"
+import { getVisualizationData } from "@/lib/graph"
 import { useEffect, useRef, useState } from "react"
-import { getVisualizationData } from "@/lib/git-commands"
 
 export default function GitVisualization() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -13,7 +14,7 @@ export default function GitVisualization() {
     const fetchData = async () => {
       try {
         setIsLoading(true)
-        const data = await getVisualizationData()
+        const data = await getVisualizationData(dir)
         setVisualData(data)
         setError(null)
       } catch (err) {

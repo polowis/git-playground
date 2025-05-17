@@ -60,7 +60,7 @@ function FileTreeList({fileStatuses, files}: Props) {
               }
               return collator.compare(a.name, b.name);
             })
-            .filter((f) => f.name !== ".git")
+            .filter((f) => f.name !== ".gt")
             .map((file) => {
               const fileStatus =
                 fileStatuses[
