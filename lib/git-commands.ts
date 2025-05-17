@@ -13,6 +13,7 @@ import { addFiles } from "./commands/staging";
 import { initRepo } from "./commands/init";
 import { cherryPickChanges } from "./commands/cherry-pick";
 import { gitDiff } from "./commands/diff";
+import { readFile, writeToFile } from "./filesystem/file";
 
 export const dir = "/workspace"; // root dir
 export let currentDir = "/workspace"; // Mutable for file-level commands
@@ -112,14 +113,7 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
     }
 
     const [, content, filename] = match;
-    try {
-      await fs.writeFile(`${currentDir}/${filename}`, content);
-      return `Wrote to file: ${filename}`;
-    } catch (error) {
-      return `Error: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`;
-    }
+    return await writeToFile(currentDir, filename, content);
   }
 
   if (command === "cat") {
@@ -128,14 +122,7 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
     }
 
     const filename = parts[1];
-    try {
-      const content = await fs.readFile(`${currentDir}/${filename}`, {
-        encoding: "utf8",
-      });
-      return content;
-    } catch (error) {
-      return `Error: File '${filename}' does not exist or cannot be read`;
-    }
+    return await readFile(currentDir, filename)
   }
 
   if (command === "rm") {
