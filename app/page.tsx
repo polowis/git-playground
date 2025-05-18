@@ -15,7 +15,6 @@ import { dir, executeGitCommand } from "@/lib/git-commands";
 import { initializeFileSystem } from "@/lib/fs";
 import { TerminalProvider } from "@/components/context/TerminalContext";
 import { FolderProvider } from "@/components/context/FolderContext";
-import { removeGitFolder } from "@/lib/git-utils";
 import { RepoProvider } from "@/components/context/RepoContext";
 import {
   Dialog,
@@ -24,6 +23,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import TaskView from "@/components/task-view";
+import { deleteEverything } from "@/lib/filesystem/file";
+import { TaskProvider } from "@/components/context/TaskContext";
+import Image from "next/image";
 
 export default function GitPlayground() {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
@@ -72,7 +74,8 @@ export default function GitPlayground() {
     try {
       await initializeFileSystem();
       setCommandHistory([]);
-      removeGitFolder(dir);
+      deleteEverything(dir);
+      initializeFileSystem();
       toast({
         title: "Playground Reset",
         description: "Git playground has been reset to initial state",
@@ -107,99 +110,114 @@ export default function GitPlayground() {
   return (
     <FolderProvider>
       <RepoProvider>
-        <TerminalProvider>
-          <main className="flex flex-col h-screen bg-zinc-900 text-zinc-100">
-            <header className="border-b border-zinc-800 p-4">
-              <div className="flex items-center justify-between">
-                <h1 className="text-xl font-bold">
-                  Git Interactive Playground
-                </h1>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={toggleHelp}>
-                    <HelpCircle className="w-4 h-4 mr-2" />
-                    Help
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={resetPlayground}>
-                    <RefreshCcw className="w-4 h-4 mr-2" />
-                    Reset
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <a
-                      href="https://git-scm.com/doc"
-                      target="_blank"
-                      rel="noopener noreferrer"
+        <TaskProvider>
+          <TerminalProvider>
+            <main className="flex flex-col h-screen bg-zinc-900 text-zinc-100">
+              <header className="border-b border-zinc-800 p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Image
+                      src="/favicon.ico"
+                      alt="icon"
+                      height={32}
+                      width={32}
+                    />
+                    <h1 className="text-xl font-bold">
+                      Git Interactive Sandbox
+                    </h1>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={toggleHelp}>
+                      <HelpCircle className="w-4 h-4 mr-2" />
+                      Help
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={resetPlayground}
                     >
-                      <BookOpen className="w-4 h-4 mr-2" />
-                      Git Docs
-                    </a>
-                  </Button>
+                      <RefreshCcw className="w-4 h-4 mr-2" />
+                      Reset
+                    </Button>
+                    <Button variant="outline" size="sm" asChild>
+                      <a
+                        href="https://git-scm.com/doc"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <BookOpen className="w-4 h-4 mr-2" />
+                        Git Docs
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </header>
+
+              <div className="flex flex-1 overflow-hidden">
+                <div className="flex flex-col w-full md:w-1/2 border-r border-zinc-800">
+                  <Tabs
+                    defaultValue="terminal"
+                    className="flex flex-col h-full"
+                  >
+                    <TabsList className="mx-4 mt-2 justify-start bg-zinc-800">
+                      <TabsTrigger value="terminal">Terminal</TabsTrigger>
+                      <TabsTrigger value="history">Command History</TabsTrigger>
+                    </TabsList>
+                    <TabsContent
+                      value="terminal"
+                      className="flex-1 p-4 overflow-auto"
+                    >
+                      <Terminal onCommand={handleCommand} ref={terminalRef} />
+                    </TabsContent>
+                    <TabsContent
+                      value="history"
+                      className="flex-1 p-4 overflow-auto"
+                    >
+                      <CommandHistory commands={commandHistory} />
+                    </TabsContent>
+                  </Tabs>
+                </div>
+
+                <div className="hidden md:flex md:flex-col md:w-1/2">
+                  <Tabs defaultValue="tasks" className="flex flex-col h-full">
+                    <TabsList className="mx-4 mt-2 justify-start bg-zinc-800">
+                      <TabsTrigger value="visualization">Git Graph</TabsTrigger>
+                      <TabsTrigger value="files">File Tree</TabsTrigger>
+                      <TabsTrigger value="tasks">Learn</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="tasks" className="h-full">
+                      <TaskView />
+                    </TabsContent>
+
+                    <TabsContent
+                      value="visualization"
+                      className="flex-1 p-4 overflow-auto"
+                    >
+                      <GitVisualization />
+                    </TabsContent>
+                    <TabsContent
+                      value="files"
+                      className="flex-1 p-4 overflow-auto"
+                    >
+                      <FileTree />
+                    </TabsContent>
+                  </Tabs>
                 </div>
               </div>
-            </header>
 
-            <div className="flex flex-1 overflow-hidden">
-              <div className="flex flex-col w-full md:w-1/2 border-r border-zinc-800">
-                <Tabs defaultValue="terminal" className="flex flex-col h-full">
-                  <TabsList className="mx-4 mt-2 justify-start bg-zinc-800">
-                    <TabsTrigger value="terminal">Terminal</TabsTrigger>
-                    <TabsTrigger value="history">Command History</TabsTrigger>
-                  </TabsList>
-                  <TabsContent
-                    value="terminal"
-                    className="flex-1 p-4 overflow-auto"
-                  >
-                    <Terminal onCommand={handleCommand} ref={terminalRef} />
-                  </TabsContent>
-                  <TabsContent
-                    value="history"
-                    className="flex-1 p-4 overflow-auto"
-                  >
-                    <CommandHistory commands={commandHistory} />
-                  </TabsContent>
-                </Tabs>
-              </div>
+              <Dialog open={showHelp} onOpenChange={setShowHelp}>
+                <DialogTrigger></DialogTrigger>
+                <DialogContent className="max-w-lg">
+                  <DialogTitle>Command Help</DialogTitle>
+                  <CommandHelp />
+                </DialogContent>
+              </Dialog>
 
-              <div className="hidden md:flex md:flex-col md:w-1/2">
-                <Tabs
-                  defaultValue="visualization"
-                  className="flex flex-col h-full"
-                >
-                  <TabsList className="mx-4 mt-2 justify-start bg-zinc-800">
-                    <TabsTrigger value="visualization">Git Graph</TabsTrigger>
-                    <TabsTrigger value="files">File Tree</TabsTrigger>
-                    <TabsTrigger value="tasks">Learn</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="tasks">
-                    <TaskView />
-                  </TabsContent>
-
-                  <TabsContent
-                    value="visualization"
-                    className="flex-1 p-4 overflow-auto"
-                  >
-                    <GitVisualization />
-                  </TabsContent>
-                  <TabsContent
-                    value="files"
-                    className="flex-1 p-4 overflow-auto"
-                  >
-                    <FileTree />
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
-
-            <Dialog open={showHelp} onOpenChange={setShowHelp}>
-              <DialogTrigger></DialogTrigger>
-              <DialogContent className="max-w-lg">
-                <DialogTitle>Command Help</DialogTitle>
-                <CommandHelp />
-              </DialogContent>
-            </Dialog>
-
-            <Toaster />
-          </main>
-        </TerminalProvider>
+              <Toaster />
+            </main>
+          </TerminalProvider>
+        </TaskProvider>
       </RepoProvider>
     </FolderProvider>
   );

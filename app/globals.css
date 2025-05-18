@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --spacing: 0.25rem;
+}
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -90,5 +93,62 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .markdown p:not(:first-child) {
+    margin-top: 0.5rem;
+  }
+  .markdown p {
+    margin-bottom: 0.5rem;
+  }
+
+  .markdown hr {
+    margin-block: calc(0.25em * 10);
+    border-color: #ffffff0d;
+  }
+
+  .markdown {
+    line-height: 1.6;
+  }
+
+  .markdown h3 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: calc(var(--spacing) * 2);
+    margin-top: calc(var(--spacing) * 4);
+  }
+
+  pre {
+    background: #303030;
+    overflow: auto;
+    margin: 12px 0;
+    padding: 4px;
+  }
+
+  blockquote {
+    padding: 0.25em;
+    padding-left: calc(0.25em * 6);
+    position: relative;
+  }
+
+  pre > code {
+    background-color: transparent !important;
+  }
+
+  code {
+    background-color: #424242;
+    font-size: 0.875em;
+    padding: 0.15rem 0.3rem;
+  }
+
+  blockquote:after {
+    background-color: #ffffff26;
+    border-radius: 2px;
+    bottom: 0.5rem;
+    content: "";
+    position: absolute;
+    top: 0.5rem;
+    width: 4px;
+    left: 0;
   }
 }

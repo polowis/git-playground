@@ -5,22 +5,39 @@ export interface Task {
   id: string;
   title: string;
   description: string;
+  content: string;
+  init?: (args: { fs: FS.PromisifiedFS; dir: string }) => void;
   validate: (args: { fs: FS.PromisifiedFS; dir: string }) => Promise<boolean>;
+  cleanup?: (args: { fs: FS.PromisifiedFS; dir: string }) => void;
 }
 
 export const tasks: Task[] = [
   {
+    id: "app-overview",
+    title: "Overview",
+    description: "",
+    content: "app-overview.md",
+    validate: async () => {
+      return true
+    },
+  },
+  {
     id: "git-config",
     title: "Setup your identity",
     description: "Use git config to setup your identity",
+    content: "setup-your-identity.md",
     validate: async () => {
-      return localStorage.getItem('global.user.name') !== null && localStorage.getItem('global.user.email') != null;
+      return (
+        localStorage.getItem("global.user.name") !== null &&
+        localStorage.getItem("global.user.email") != null
+      );
     },
   },
   {
     id: "init-repo",
-    title: "Initialize a Repository",
+    title: "🧱 Initialize a Repository",
     description: "Run `git init` to start a repository.",
+    content: "init-repo.md",
     validate: async ({ fs, dir }) => {
       try {
         const stat = await fs.stat(`${dir}/.git`);
@@ -31,16 +48,23 @@ export const tasks: Task[] = [
     },
   },
   {
-    id: "first-commit",
-    title: "Make Your First Commit",
-    description: "Create a file, add it, and commit it.",
+    id: "project-overview",
+    title: "📁 See What's in Your Project",
+    description:
+      "Before we dive deeper into Git, it helps to see what's in your current folder.",
+    content: "project-overview.md",
     validate: async ({ fs, dir }) => {
-      try {
-        const log = await git.log({ fs, dir });
-        return log.length > 0;
-      } catch {
-        return false;
-      }
+      return true;
+    },
+  },
+
+  {
+    id: "staging-area",
+    title: "🎯 The Staging Area (aka “Index”)",
+    description: "",
+    content: "staging-area.md",
+    validate: async ({ fs, dir }) => {
+      return true;
     },
   },
 ];
