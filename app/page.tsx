@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FileTree from "@/components/file-tree";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
-import { RefreshCcw, HelpCircle, BookOpen } from "lucide-react";
+import { RefreshCcw, HelpCircle, BookOpen, GithubIcon } from "lucide-react";
 import CommandHelp from "@/components/command-help";
 import { dir, executeGitCommand } from "@/lib/git-commands";
 import { initializeFileSystem } from "@/lib/fs";
@@ -148,6 +148,16 @@ export default function GitPlayground() {
                       >
                         <BookOpen className="w-4 h-4 mr-2" />
                         Git Docs
+                      </a>
+                    </Button>
+                    <Button variant="outline" size="sm" asChild>
+                      <a
+                        href="https://github.com/polowis/git-playground"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <GithubIcon />
+                        Star this repo
                       </a>
                     </Button>
                   </div>
