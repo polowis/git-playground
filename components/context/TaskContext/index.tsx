@@ -10,6 +10,7 @@ interface TaskContextType {
   activeTask?: Task;
   getActiveTaskDetails: () => Promise<string>;
   completeTask: () => void;
+  previousTask: () => void;
 }
 
 const localStorageKey = "gp-task";
@@ -79,7 +80,24 @@ export const TaskProvider = ({ children }: TaskProviderProps) => {
     setActiveTaskId(tasks[nextIdx].id);
   };
 
-  const previousTask = () => {};
+  const previousTask = () => {
+    const currentIdx = tasks.findIndex((t) => t.id === activeTaskId);
+    let nextIdx = currentIdx - 1;
+    if(nextIdx < 0) { // cannot go outside array boundaries
+      nextIdx = 0
+    }
+
+    // clean up current stage before backward
+    const currentTask = getTaskById(activeTaskId);
+    if (currentTask?.cleanup) {
+      currentTask?.cleanup({ fs, dir });
+    }
+    
+    localStorage.setItem(localStorageKey, tasks[nextIdx].id);
+    setActiveTaskId(tasks[nextIdx].id);
+  };
+
+
 
   const completeTask = async () => {
     const currentTask = getTaskById(activeTaskId);
@@ -106,6 +124,7 @@ export const TaskProvider = ({ children }: TaskProviderProps) => {
         completeTask,
         activeTaskContent,
         activeTask,
+        previousTask
       }}
     >
       {children}

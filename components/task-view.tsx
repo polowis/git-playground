@@ -15,7 +15,8 @@ import { CheckIcon, ChevronLeft } from "lucide-react";
 import { tasks } from "@/lib/tasks";
 
 export default function TaskView() {
-  const { activeTaskContent, completeTask, activeTask } = useTaskContext();
+  const { activeTaskContent, completeTask, activeTask, previousTask } =
+    useTaskContext();
   return (
     <Card className="bg-zinc-900 text-white mx-4 mt-2 h-[90%] rounded-md border-none">
       <CardHeader className="p-4 flex flex-row items-center justify-between">
@@ -38,9 +39,11 @@ export default function TaskView() {
           </div>
         </CardContent>
         <CardFooter className="justify-start p-4 gap-3">
-          <Button variant="outline">
-            <ChevronLeft/> Back
-          </Button>
+          {tasks.findIndex((t) => t.id === activeTask?.id) !== 0 && (
+            <Button variant="outline" onClick={previousTask}>
+              <ChevronLeft /> Back
+            </Button>
+          )}
           <Button
             onClick={completeTask}
             variant="outline"

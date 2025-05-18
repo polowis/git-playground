@@ -1,5 +1,4 @@
 import FS from "@isomorphic-git/lightning-fs";
-import * as git from "isomorphic-git";
 
 export interface Task {
   id: string;
@@ -53,7 +52,7 @@ export const tasks: Task[] = [
     description:
       "Before we dive deeper into Git, it helps to see what's in your current folder.",
     content: "project-overview.md",
-    validate: async ({ fs, dir }) => {
+    validate: async () => {
       return true;
     },
   },
@@ -63,7 +62,7 @@ export const tasks: Task[] = [
     title: "🎯 The Staging Area (aka “Index”)",
     description: "",
     content: "staging-area.md",
-    validate: async ({ fs, dir }) => {
+    validate: async () => {
       return true;
     },
   },
