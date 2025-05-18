@@ -15,3 +15,7 @@ A sandbox environment to learn and experiment with Git.
 Whether you're running a workshop, learning Git on your own, or helping others get started, **git-playground** is a friendly and effective way to explore the power of version control.
 
 > ⭐ Like it? **Star this repo** to support the project!
+
+### Screenshot
+![Screenshot 1](/screenshots/capture1.png)
+![Screenshot 2](/screenshots/capture2.png)
