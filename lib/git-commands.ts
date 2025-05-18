@@ -10,7 +10,7 @@ import { addFiles } from "./commands/staging";
 import { initRepo } from "./commands/init";
 import { cherryPick } from "./commands/cherry-pick";
 import { diffUnstagedChangesVsLastCommit } from "./commands/diff";
-import { readFile, writeToFile } from "./filesystem/file";
+import { appendToFile, readFile, writeToFile } from "./filesystem/file";
 import { gitShow } from "./commands/show";
 import { setGitConfig } from "./commands/config";
 import CLI from "./cli";
@@ -153,17 +153,25 @@ cli.register("cd", async (args: CommandArgs) => {
 
 cli.register("echo", async (arg: CommandArgs) => {
   const args = arg._;
-  if (args.length < 3 || args[1] !== ">") {
+  if (args.length < 3 || (args[1] !== ">" && args[1] !== ">>")) {
     return 'Error: Invalid command format. Use: echo "content" > file';
   }
-  const content = args[0];
+  let content = args[0];
   const filename = args[args.length - 1]; // Last part is the filename
+
+  content = content.replace(/\\n/g, '\n'); // Converts all occurrences of '\n' to actual newline characters
 
   try {
     // override the file
-    await writeToFile(currentDir, filename, content);
+    if (args[1] === ">") {
+      await writeToFile(currentDir, filename, content);
+      return `Content written to: ${filename}`;
+    } else if (args[1] === ">>") {
+      await appendToFile(currentDir, filename, content);
+      return `Content appended to: ${filename}`;
+    }
 
-    return `Content written to: ${filename}`;
+    return `Unsupported argument: ${args[1]}`;
   } catch (error) {
     return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
   }

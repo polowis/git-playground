@@ -53,3 +53,27 @@ export async function deleteEverything(dir: string) {
     console.error(`Error deleting: ${dir}`, err);
   }
 }
+
+// Append content to a file (manual implementation)
+export async function appendToFile(dir: string, filename: string, content: string) {
+  const filePath = path.join(dir, filename);
+
+  try {
+    const fileExists = await fs.stat(filePath).then(() => true).catch(() => false);
+
+    let existingContent = '';
+    if (fileExists) {
+      existingContent = await readFile(dir, filename)
+    }
+
+    // Append the new content to the existing content
+    const newContent = existingContent + content + '\n'; // Adding newline after appending
+
+    // Write the combined content back to the file
+    await writeToFile(dir, filename, newContent);
+  } catch (error) {
+    throw new Error(`Failed to append to file: ${error}`);
+  }
+}
+
+
