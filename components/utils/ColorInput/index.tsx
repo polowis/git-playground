@@ -42,7 +42,6 @@ function parseColorTags(input: string): (string | JSX.Element)[] {
   return parts;
 }
 
-
 function applyHighlighting(
   parts: (string | JSX.Element)[],
   rules: HighlightRule[]
@@ -82,9 +81,11 @@ function applyHighlighting(
   return result;
 }
 
-function handleLineBreaks(text: string, highlightRules: HighlightRule[]): JSX.Element[] {
-
-  const lines = text.split('\n');
+function handleLineBreaks(
+  text: string,
+  highlightRules: HighlightRule[]
+): JSX.Element[] {
+  const lines = text.split("\n");
   return lines.map((line, index) => (
     <React.Fragment key={index}>
       {parseText(line, highlightRules)}
@@ -103,51 +104,40 @@ function parseText(
 
 const HightlightText: React.FC<CustomTextProps> = ({ text }) => {
   const highlightRules: HighlightRule[] = [
-        {
-      // Match `touch <file>`
+    {
       pattern: /\btouch\s+/gi,
       render: (_, file, key) => (
-        <span key={key} style={{ color: 'tomato' }}>
-          touch&nbsp;
-        </span>
+        <span style={{ color: "tomato" }}>touch&nbsp;</span>
       ),
     },
     {
       pattern: /\becho\s+/gi,
       render: (_, content, file, key) => (
-        <span key={key} style={{ color: 'tomato' }}>
-          echo&nbsp;
-        </span>
+        <span style={{ color: "tomato" }}>echo&nbsp;</span>
       ),
     },
     {
       pattern: /\bcat\s+/gi,
       render: (_, content, file, key) => (
-        <span key={key} style={{ color: 'tomato' }}>
-          cat&nbsp;
-        </span>
+        <span style={{ color: "tomato" }}>cat&nbsp;</span>
       ),
     },
     {
       pattern: /\brm\s+/gi,
       render: (_, content, file, key) => (
-        <span key={key} style={{ color: 'tomato' }}>
-          rm&nbsp;
-        </span>
+        <span style={{ color: "tomato" }}>rm&nbsp;</span>
       ),
     },
     {
       pattern: /\bls\s+/gi,
       render: (_, content, file, key) => (
-        <span key={key} style={{ color: 'tomato' }}>
-          ls&nbsp;
-        </span>
+        <span style={{ color: "tomato" }}>ls&nbsp;</span>
       ),
     },
     {
       pattern: /\bmkdir\s+/gi,
       render: (_, content, file, key) => (
-        <span key={key} style={{ color: 'tomato' }}>
+        <span key={key} style={{ color: "tomato" }}>
           mkdir&nbsp;
         </span>
       ),
@@ -155,23 +145,19 @@ const HightlightText: React.FC<CustomTextProps> = ({ text }) => {
     {
       pattern: /\bcd\s+/gi,
       render: (_, content, file, key) => (
-        <span key={key} style={{ color: 'tomato' }}>
-          cd&nbsp;
-        </span>
+        <span style={{ color: "tomato" }}>cd&nbsp;</span>
       ),
     },
     {
       pattern: /\bcp\s+/gi,
       render: (_, content, file, key) => (
-        <span key={key} style={{ color: 'tomato' }}>
-          cp&nbsp;
-        </span>
+        <span style={{ color: "tomato" }}>cp&nbsp;</span>
       ),
     },
     {
       pattern: /\b(git)\s+([\w-]+)((?:\s+[^-\s][^\s]*)*)/gi,
       render: (full, git, subcommand, args, key) => (
-        <span key={key}>
+        <span>
           <span style={{ color: "tomato" }}>{git}</span>{" "}
           <span style={{ color: "lightblue" }}>{subcommand}</span>
           <span style={{ color: "lightgreen" }}>{args}</span>

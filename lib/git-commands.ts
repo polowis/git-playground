@@ -160,13 +160,105 @@ cli.register("echo", async (arg: CommandArgs) => {
   }
 });
 
-cli.register('cat', async(args: CommandArgs) => {
-  if(args._.length < 1) {
+cli.register("cat", async (args: CommandArgs) => {
+  if (args._.length < 1) {
     return "Error: Missing filename";
   }
   const filename = args._[0];
-  return await readFile(currentDir, filename)
-})
+  return await readFile(currentDir, filename);
+});
+
+cli.register("rm", async (args: CommandArgs) => {
+  const recursive = Boolean(args.r);
+  const force = Boolean(args.f);
+  const rf = Boolean(args.rf);
+  const verbose = Boolean(args.v);
+  const interactive = Boolean(args.i);
+
+  let target = "";
+  if (!recursive && !force && !verbose && !interactive && !rf) {
+    target = args._[0];
+    if (!target) {
+      return "Error: Missing filename or folder";
+    }
+  } else {
+    target = (args.r || args.f || args.v || args.i || args.rf) as string;
+  }
+
+  if (!target) {
+    return "Error: Missing filename or folder";
+  }
+
+  if (target.endsWith(".git")) {
+    return "Cannot delete .git folder. Please use reset button instead";
+  }
+
+  const fullPath = path.join(currentDir, target);
+
+  async function confirmDeletion(path: string): Promise<boolean> {
+    if (!interactive) return true;
+
+    // In browser, simulate confirmation;
+    return window.confirm(`Delete ${path}?`);
+  }
+
+  async function rmrf(
+    absPath: string,
+    relPath: string
+  ): Promise<void | string> {
+    try {
+      const stat = await fs.lstat(absPath);
+
+      if (stat.type === "dir") {
+        if (!recursive) {
+          return `Error: '${target}' is a directory. Use -r to delete folders.`;
+        }
+
+        const entries = await fs.readdir(absPath);
+        for (const entry of entries) {
+          await rmrf(path.join(absPath, entry), path.join(relPath, entry));
+        }
+
+        if (await confirmDeletion(absPath)) {
+          await fs.rmdir(absPath);
+          if (verbose) console.log(`Removed directory: ${relPath}`);
+        }
+      } else {
+        if (await confirmDeletion(absPath)) {
+          await fs.unlink(absPath);
+          if (verbose) console.log(`Removed file: ${relPath}`);
+          try {
+            await git.remove({ fs, dir, filepath: relPath });
+          } catch (err) {
+            if (!force) throw err;
+          }
+        }
+      }
+    } catch (error) {
+      if (!force) {
+        throw error;
+      }
+    }
+  }
+
+  try {
+    const relativePath = path.relative(dir, fullPath);
+    const result = await rmrf(fullPath, relativePath);
+    return result ?? (verbose ? `Removed: ${target}` : "");
+  } catch (error) {
+    return `Error: '${target}' could not be deleted. ${
+      error instanceof Error ? error.message : error
+    }`;
+  }
+});
+
+cli.register(["git", "init"], async () => {
+  return await initRepo(dir);
+});
+
+cli.register(["git", "status"], async () => {
+  return await formatStatus(dir);
+});
 
 // Execute a Git command
 export async function executeGitCommand(commandLine: string): Promise<string> {
@@ -178,74 +270,6 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
     return output;
   }
 
-  if (command === "rm") {
-    if (parts.length < 2) {
-      return "Error: Missing filename or folder";
-    }
-
-    const flags = parts[1].startsWith("-") ? parts[1].slice(1) : "";
-    const targetIndex = parts[1].startsWith("-") ? 2 : 1;
-    const target = parts[targetIndex];
-    const fullPath = `${currentDir}/${target}`;
-
-    if (target.endsWith(".git")) {
-      return "Cannot delete .git folder. Please use reset button instead";
-    }
-
-    const recursive = flags.includes("r");
-    const force = flags.includes("f");
-    const verbose = flags.includes("v");
-    const interactive = flags.includes("i");
-
-    async function confirmDeletion(path: string) {
-      if (!interactive) return true;
-      return confirm(`Delete ${path}?`); // Simulate with window.confirm() or similar
-    }
-
-    async function rmrf(path: string, relativePath: string) {
-      try {
-        const stat = await fs.lstat(path);
-
-        if (stat.type === "dir") {
-          if (!recursive) {
-            return `Error: '${target}' is a directory. Use -r to delete folders.`;
-          }
-          const entries = await fs.readdir(path);
-          for (const entry of entries) {
-            await rmrf(`${path}/${entry}`, `${relativePath}/${entry}`);
-          }
-          if (await confirmDeletion(path)) {
-            await fs.rmdir(path);
-            if (verbose) console.log(`Removed directory: ${path}`);
-          }
-        } else {
-          if (await confirmDeletion(path)) {
-            await fs.unlink(path);
-            if (verbose) console.log(`Removed file: ${path}`);
-            try {
-              await git.remove({ fs, dir: dir, filepath: relativePath });
-            } catch (err) {
-              console.error(err);
-              if (!force) throw err; // Swallow error if force is enabled
-            }
-          }
-        }
-      } catch (error) {
-        if (!force) {
-          throw error;
-        }
-      }
-    }
-
-    try {
-      const relativePath = fullPath.replace(dir + "/", "");
-      await rmrf(fullPath, relativePath);
-      return verbose ? `Removed: ${target}` : "";
-    } catch (error) {
-      return `Error: '${target}' could not be deleted. ${error}`;
-    }
-  }
-
   // Handle git commands
   if (command !== "git") {
     return `Command not found: ${command}`;
@@ -253,20 +277,10 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
 
   const gitCommand = parts[1];
 
-  // Handle git init
-  if (gitCommand === "init") {
-    return await initRepo(dir);
-  }
-
   // Check if git is initialized for all other commands
   const isRepo = await isGitRepository(dir);
   if (!isRepo && gitCommand !== "init") {
     return "Not a git repository. Use 'git init' to create a new repository.";
-  }
-
-  // Handle git status
-  if (gitCommand === "status") {
-    return await formatStatus(dir);
   }
 
   // Handle git add

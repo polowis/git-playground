@@ -83,7 +83,7 @@ export async function formatStatus(dir: string): Promise<string> {
 
     // Get current branch
     const currentBranch = await getCurrentBranch(dir);
-    output += `On branch ${currentBranch}\n\n`;
+    output += `On branch <color="orange">${currentBranch}</color>\n\n`;
 
     if (statusMatrix.length === 0) {
       output += "nothing to commit, working tree clean";
@@ -121,7 +121,7 @@ export async function formatStatus(dir: string): Promise<string> {
     }
 
     if (staged.length > 0) {
-      output += "Changes to be committed:\n";
+      output += `<color="#22c55e">Changes to be committed</color>\n`;
       output += staged.join("\n") + "\n\n";
     }
 
@@ -131,7 +131,7 @@ export async function formatStatus(dir: string): Promise<string> {
     }
 
     if (untracked.length > 0) {
-      output += "Untracked files:\n";
+      output += `<color="#ef4444">Untracked files</color>\n`;
       output += untracked.join("\n");
     }
 
