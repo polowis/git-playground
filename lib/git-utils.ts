@@ -27,6 +27,8 @@ Git Commands:
   git branch <name>             Create a new branch
   git checkout <branch>         Switch to a branch
   git merge <branch>            Merge a branch into current branch
+  git show
+  git diff
 
 
 File Operations:

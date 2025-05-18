@@ -29,6 +29,14 @@ cli.register("clear", async () => {
   return "CLEAR_TERMINAL";
 });
 
+cli.register("pwd", async () => {
+  return dir;
+});
+
+cli.register("whoami", async() => {
+  return 'Git sandbox user'
+})
+
 cli.register("ls", async (args: CommandArgs) => {
   try {
     let files: string[] = [];
@@ -281,7 +289,6 @@ cli.register(["git", "add"], async (args: CommandArgs) => {
   return results.join("\n");
 });
 
-
 cli.register(["git", "diff"], async () => {
   return await diffUnstagedChangesVsLastCommit(dir);
 });
@@ -384,7 +391,7 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
     if (!isRepo) {
       return "Not a git repository. Use 'git init' to create a new repository.";
     }
-    return 'Welcome to Git interactive playground. Use help to see all available subcommands'
+    return "Welcome to Git interactive playground. Use help to see all available subcommands";
   }
 
   return await cli.run(commandLine); // new cli
