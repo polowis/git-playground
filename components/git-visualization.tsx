@@ -1,12 +1,13 @@
 "use client"
 
 import { dir } from "@/lib/git-commands"
-import { getVisualizationData } from "@/lib/graph"
+import * as git from "isomorphic-git";
+import { getVisualizationData, VisualizationData } from "@/lib/graph"
 import { useEffect, useRef, useState } from "react"
 
 export default function GitVisualization() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [visualData, setVisualData] = useState<any>(null)
+  const [visualData, setVisualData] = useState<VisualizationData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -102,7 +103,7 @@ export default function GitVisualization() {
   )
 }
 
-function drawGitGraph(ctx: CanvasRenderingContext2D, width: number, height: number, data: any) {
+function drawGitGraph(ctx: CanvasRenderingContext2D, width: number, height: number, data: VisualizationData) {
   const { commits, branches, branchHeads, currentBranch } = data
 
   if (commits.length === 0) {
@@ -128,7 +129,7 @@ function drawGitGraph(ctx: CanvasRenderingContext2D, width: number, height: numb
   })
 
   // Position commits
-  commits.forEach((commit: any, index: number) => {
+  commits.forEach((commit: git.ReadCommitResult, index: number) => {
     const y = startY + index * commitSpacing
 
     // Find which branch this commit belongs to
@@ -147,7 +148,7 @@ function drawGitGraph(ctx: CanvasRenderingContext2D, width: number, height: numb
   })
 
   // Draw connections between commits
-  commits.forEach((commit: any, index: number) => {
+  commits.forEach((commit: git.ReadCommitResult, index: number) => {
     if (index < commits.length - 1) {
       const currentCommit = commit
       const parentCommit = commits[index + 1]
@@ -167,7 +168,7 @@ function drawGitGraph(ctx: CanvasRenderingContext2D, width: number, height: numb
   })
 
   // Draw commits
-  commits.forEach((commit: any) => {
+  commits.forEach((commit: git.ReadCommitResult) => {
     const pos = commitPositions.get(commit.oid)
     if (!pos) return
 

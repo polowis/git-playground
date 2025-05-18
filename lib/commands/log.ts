@@ -39,7 +39,7 @@ export async function getFileCommitHistory(dir: string, filepath: string) {
         if (lastSHA !== null) commitsThatMatter.push(lastCommit);
         lastSHA = o.oid;
       }
-    } catch (err) {
+    } catch {
       // file no longer there
       commitsThatMatter.push(lastCommit);
       break;

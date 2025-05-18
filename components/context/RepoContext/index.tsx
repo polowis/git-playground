@@ -3,10 +3,11 @@ import { FSEntry, listFiles } from "@/lib/fs";
 import { dir } from "@/lib/git-commands";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { useFolderContext } from "../FolderContext";
+import { StatusRow } from "isomorphic-git";
 
 interface RepoContextType {
-  statusMatrix: any[];
-  setStatusMatrix: React.Dispatch<React.SetStateAction<any[]>>;
+  statusMatrix: StatusRow[];
+  setStatusMatrix: React.Dispatch<React.SetStateAction<StatusRow[]>>;
   fileStatuses: Record<string, { status: string; color: string }>;
   triggerRefresh: () => void;
   files: FSEntry[];
@@ -28,7 +29,7 @@ interface RepoProviderProps {
 }
 
 export const RepoProvider = ({ children }: RepoProviderProps) => {
-  const [statusMatrix, setStatusMatrix] = useState<any[]>([]);
+  const [statusMatrix, setStatusMatrix] = useState<StatusRow[]>([]);
   const [fileStatuses, setFileStatuses] = useState<
     Record<string, { status: string; color: string }>
   >({});

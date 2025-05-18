@@ -1,10 +1,11 @@
+import FS from "@isomorphic-git/lightning-fs";
 import * as git from "isomorphic-git";
 
 export interface Task {
   id: string;
   title: string;
   description: string;
-  validate: (args: { fs: any; dir: string }) => Promise<boolean>;
+  validate: (args: { fs: FS.PromisifiedFS; dir: string }) => Promise<boolean>;
 }
 
 export const tasks: Task[] = [

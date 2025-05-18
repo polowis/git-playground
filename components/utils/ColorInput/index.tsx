@@ -17,7 +17,7 @@ function parseColorTags(input: string): (string | JSX.Element)[] {
   let match: RegExpExecArray | null;
 
   while ((match = regex.exec(input)) !== null) {
-    const [fullMatch, color, text] = match;
+    const [, color, text] = match;
 
     if (match.index > lastIndex) {
       parts.push(input.slice(lastIndex, match.index));
@@ -106,57 +106,57 @@ const HightlightText: React.FC<CustomTextProps> = ({ text }) => {
   const highlightRules: HighlightRule[] = [
     {
       pattern: /\btouch\s+/gi,
-      render: (_, file, key) => (
+      render: () => (
         <span style={{ color: "tomato" }}>touch&nbsp;</span>
       ),
     },
     {
       pattern: /\becho\s+/gi,
-      render: (_, content, file, key) => (
+      render: () => (
         <span style={{ color: "tomato" }}>echo&nbsp;</span>
       ),
     },
     {
       pattern: /\bcat\s+/gi,
-      render: (_, content, file, key) => (
+      render: () => (
         <span style={{ color: "tomato" }}>cat&nbsp;</span>
       ),
     },
     {
       pattern: /\brm\s+/gi,
-      render: (_, content, file, key) => (
+      render: () => (
         <span style={{ color: "tomato" }}>rm&nbsp;</span>
       ),
     },
     {
       pattern: /\bls\s+/gi,
-      render: (_, content, file, key) => (
+      render: () => (
         <span style={{ color: "tomato" }}>ls&nbsp;</span>
       ),
     },
     {
       pattern: /\bmkdir\s+/gi,
-      render: (_, content, file, key) => (
-        <span key={key} style={{ color: "tomato" }}>
+      render: () => (
+        <span style={{ color: "tomato" }}>
           mkdir&nbsp;
         </span>
       ),
     },
     {
       pattern: /\bcd\s+/gi,
-      render: (_, content, file, key) => (
+      render: () => (
         <span style={{ color: "tomato" }}>cd&nbsp;</span>
       ),
     },
     {
       pattern: /\bcp\s+/gi,
-      render: (_, content, file, key) => (
+      render: () => (
         <span style={{ color: "tomato" }}>cp&nbsp;</span>
       ),
     },
     {
       pattern: /\b(git)\s+([\w-]+)((?:\s+[^-\s][^\s]*)*)/gi,
-      render: (full, git, subcommand, args, key) => (
+      render: (_, git, subcommand, args) => (
         <span>
           <span style={{ color: "tomato" }}>{git}</span>{" "}
           <span style={{ color: "lightblue" }}>{subcommand}</span>

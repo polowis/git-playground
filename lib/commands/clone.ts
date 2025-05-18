@@ -1,7 +1,6 @@
-import * as git from "isomorphic-git";
-import { fs } from "../fs";
 
 export async function cloneRepo(dir: string, repoUrl: string) {
+  return `"Cloned ${repoUrl} to ${dir}`
   /*await git.clone({
     fs: fs,
     dir,

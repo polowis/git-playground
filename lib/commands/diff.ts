@@ -40,7 +40,7 @@ export async function gitDiff(dir: string) {
   const B = git.TREE({ ref: oids[oids.length - 1] });
 
   // Get a list of the files that changed
-  let changes: Set<GitDiff> = new Set();
+  const changes: Set<GitDiff> = new Set();
   try {
     await git.walk({
       fs,
@@ -49,8 +49,8 @@ export async function gitDiff(dir: string) {
       map: async function (filename, [A, B]) {
         if ((await A?.type()) === "tree") return;
 
-        let Aoid = await A?.oid();
-        let Boid = await B?.oid();
+        const Aoid = await A?.oid();
+        const Boid = await B?.oid();
 
         // Skip pairs where the oids are the same
         if (Aoid === Boid) return;

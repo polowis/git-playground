@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Folder, GitBranch } from "lucide-react";
-import { FSEntry, listFiles } from "@/lib/fs";
 import { dir } from "@/lib/git-commands";
 import { getCurrentBranch } from "@/lib/commands/branch";
 import { isGitRepository } from "@/lib/git-utils";
@@ -54,7 +53,7 @@ export default function FileTree() {
     return (
       <div className="flex flex-col items-center justify-center h-full text-zinc-500">
         <p>Git repository not initialized</p>
-        <p className="text-sm mt-2">Use 'git init' to start</p>
+        <p className="text-sm mt-2">Use &apos;git init&apos; to start</p>
       </div>
     );
   }

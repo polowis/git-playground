@@ -30,7 +30,7 @@ export async function initializeFileSystem() {
     // Check if the directory exists, if not create it
     try {
       await fs.stat("/workspace")
-    } catch (err) {
+    } catch {
       await fs.mkdir("/workspace")
     }
 
@@ -51,7 +51,7 @@ export type FSEntry = {
 export async function listFiles(dir: string): Promise<FSEntry[]> {
   try {
     const files = await fs.readdir(dir)
-    let result: FSEntry[] = []
+    const result: FSEntry[] = []
 
     for (const entry of files) {
       const fullPath = dir.endsWith("/") ? dir + entry : `${dir}/${entry}`;

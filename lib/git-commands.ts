@@ -33,7 +33,7 @@ cli.register("ls", async (args: CommandArgs) => {
   try {
     let files: string[] = [];
     if (args._.length > 0) {
-      let folderPath = path.join(dir, args._[0] || "");
+      const folderPath = path.join(dir, args._[0] || "");
       files = await fs.readdir(folderPath);
     } else {
       files = await fs.readdir(currentDir);
@@ -88,7 +88,7 @@ cli.register("touch", async (args: CommandArgs) => {
     if (stats.isFile()) {
       return `Error: File ${filename} already exists`;
     }
-  } catch (err) {
+  } catch {
     // If the file doesn't exist, `fs.stat` will throw an error.
     try {
       await fs.writeFile(filePath, "", "utf8");
@@ -265,7 +265,7 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
   const parts = commandLine.trim().split(/\s+/);
   const command = parts[0];
 
-  let output = await cli.run(commandLine); // new cli
+  const output = await cli.run(commandLine); // new cli
   if (!output.startsWith("Unknown command")) {
     return output;
   }

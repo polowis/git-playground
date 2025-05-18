@@ -11,7 +11,6 @@ import {
 } from "react";
 import { useTerminal } from "./context/TerminalContext";
 import { ScrollArea } from "./ui/scroll-area";
-import GitSyntaxHighlighter from "./git-syntax-highlighter";
 import "../styles/terminal.css";
 import { useRepoContext } from "./context/RepoContext";
 import HightlightText from "./utils/ColorInput";

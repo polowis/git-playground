@@ -139,7 +139,7 @@ function FileTreeList({ fileStatuses, files }: Props) {
       {files.length === 0 ? (
         <div className="text-zinc-500 text-sm p-4 text-center">
           <p>No files in repository</p>
-          <p className="mt-1">Create files with 'touch filename'</p>
+          <p className="mt-1">Create files with &apos;touch filename&apos;</p>
         </div>
       ) : (
         <ul className="space-y-1">

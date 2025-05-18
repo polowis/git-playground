@@ -2,7 +2,13 @@ import * as git from "isomorphic-git";
 import { fs } from "./fs";
 import { getCurrentBranch } from "./commands/branch";
 
-export async function getVisualizationData(dir: string) {
+export type VisualizationData = {
+  commits: git.ReadCommitResult[];
+  branches: string[];
+  branchHeads: Record<string, string>;
+  currentBranch: string;
+};
+export async function getVisualizationData(dir: string): Promise<VisualizationData> {
   try {
     const commits = await git.log({ fs, dir });
     const branches = await git.listBranches({ fs, dir });

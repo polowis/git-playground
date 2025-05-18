@@ -8,7 +8,7 @@ export async function readFile(currentDir: string, filename: string) {
       encoding: "utf8",
     });
     return content;
-  } catch (error) {
+  } catch {
     return `Error: File '${filename}' does not exist or cannot be read`;
   }
 }

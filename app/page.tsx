@@ -167,15 +167,17 @@ export default function GitPlayground() {
                   <TabsList className="mx-4 mt-2 justify-start bg-zinc-800">
                     <TabsTrigger value="visualization">Git Graph</TabsTrigger>
                     <TabsTrigger value="files">File Tree</TabsTrigger>
+                    <TabsTrigger value="tasks">Learn</TabsTrigger>
                   </TabsList>
-                  <TaskView />
+                  <TabsContent value="tasks">
+                    <TaskView />
+                  </TabsContent>
+
                   <TabsContent
                     value="visualization"
                     className="flex-1 p-4 overflow-auto"
                   >
-                    
-                      <GitVisualization />
-                    
+                    <GitVisualization />
                   </TabsContent>
                   <TabsContent
                     value="files"

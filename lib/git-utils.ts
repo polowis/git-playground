@@ -7,7 +7,7 @@ export async function isGitRepository(dir: string): Promise<boolean> {
   try {
     await git.findRoot({ fs, filepath: dir });
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
