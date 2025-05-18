@@ -1,4 +1,6 @@
 import FS from "@isomorphic-git/lightning-fs";
+import * as git from "isomorphic-git";
+import { getStatus } from "../commands/status";
 
 export interface Task {
   id: string;
@@ -17,7 +19,7 @@ export const tasks: Task[] = [
     description: "",
     content: "app-overview.md",
     validate: async () => {
-      return true
+      return true;
     },
   },
   {
@@ -62,8 +64,41 @@ export const tasks: Task[] = [
     title: "🎯 The Staging Area (aka “Index”)",
     description: "",
     content: "staging-area.md",
-    validate: async () => {
-      return true;
+    validate: async ({ fs, dir }) => {
+      try {
+        const statusMatrix = await getStatus(dir);
+        for (const [filepath, headStatus, stageStatus] of statusMatrix) {
+          const file = filepath as string;
+          // File is staged (added)
+          if (headStatus === 0 && stageStatus === 2) {
+            if (file === "alice.txt") {
+              return true;
+            }
+          }
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    },
+  },
+  {
+    id: "commit-file",
+    title: "📝 Make a Commit",
+    description:
+      'Run `git commit -m "Add alice.txt with greeting"` to save your changes.',
+    content: "first-commit.md",
+    validate: async ({ fs, dir }) => {
+      try {
+        const commits = await git.log({ fs, dir, depth: 1 });
+        if (!commits.length) return false;
+
+        const lastCommit = commits[0];
+        const tree = await git.readTree({ fs, dir, oid: lastCommit.oid });
+        return tree.tree.some((entry) => entry.path === "alice.txt");
+      } catch {
+        return false;
+      }
     },
   },
 ];
