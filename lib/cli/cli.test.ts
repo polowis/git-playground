@@ -59,4 +59,13 @@ describe("CLI", () => {
     cli.run("cp alice.txt bob.txt");
     expect(mockFn).toHaveBeenCalledWith({ _: ["alice.txt", 'bob.txt'] });
   });
+
+  test("should handle multiple positional argument in subcommand", () => {
+    const cli = new CLI();
+    const mockFn = jest.fn();
+    cli.register(["git", "add"], mockFn);
+
+    cli.run("git add filea fileb");
+    expect(mockFn).toHaveBeenCalledWith({ _: ["filea", 'fileb'] });
+  })
 });

@@ -252,6 +252,12 @@ cli.register("rm", async (args: CommandArgs) => {
   }
 });
 
+/**
+ *
+ * GIT COMMANDS
+ *
+ */
+
 cli.register(["git", "init"], async () => {
   return await initRepo(dir);
 });
@@ -260,140 +266,131 @@ cli.register(["git", "status"], async () => {
   return await formatStatus(dir);
 });
 
+cli.register(["git", "add"], async (args: CommandArgs) => {
+  const filesToAdd = args._;
+  if (filesToAdd.length < 1) {
+    return "Error: No files specified";
+  }
+
+  const results = [];
+  for (const filepath of filesToAdd) {
+    const result = await addFiles(dir, filepath);
+    results.push(result);
+  }
+  // Return a message for all files added
+  return results.join("\n");
+});
+
+
+cli.register(["git", "diff"], async () => {
+  return await diffUnstagedChangesVsLastCommit(dir);
+});
+
+cli.register(["git", "log"], async (args: CommandArgs) => {
+  if (args._.length > 1) {
+    return await getCommitHistoryLog(dir, args._[0]);
+  }
+  return await getLog(dir);
+});
+
+// TODO: support -b flag
+cli.register(["git", "checkout"], async (args: CommandArgs) => {
+  if (args._.length < 1) {
+    return "Error: No branch specified";
+  }
+
+  const branchName = args._[0];
+  return await checkoutBranch(dir, branchName);
+});
+
+cli.register(["git", "merge"], async (args: CommandArgs) => {
+  if (args._.length < 1) {
+    return "Error: No branch specified";
+  }
+
+  const branchName = args._[0];
+  return await mergeBranch(dir, branchName);
+});
+
+cli.register(["git", "commit"], async (args: CommandArgs) => {
+  const hasMessage = Boolean(args.m);
+  if (!hasMessage) {
+    return 'Error: Missing commit message. Use: git commit -m "message"';
+  }
+
+  return await commitChanges(dir, args.m as string);
+});
+
+cli.register(["git", "show"], async (args: CommandArgs) => {
+  if (args._.length > 0) {
+    return await gitShow(dir, args._[0]);
+  }
+  return await gitShow(dir);
+});
+
+// TODO support -m flag for rename branch
+cli.register(["git", "branch"], async (args: CommandArgs) => {
+  // List branches if no arguments
+  if (args._.length === 0) {
+    return await listBranches(dir);
+  }
+
+  const branchName = args._[0];
+  return await createBranch(dir, branchName);
+});
+
+cli.register(["git", "config"], async (args: CommandArgs) => {
+  const isGlobal = Boolean(args.global);
+  if (args._.length < 1) {
+    return "Error: Missing arguments. Usage: git config --global key value";
+  }
+  if (isGlobal) {
+    const result = await setGitConfig(
+      isGlobal,
+      args.global as string,
+      args._[0]
+    );
+    return result;
+  } else {
+    return "Only support global flag at the moment. Please use --global";
+  }
+});
+
+cli.register(["git", "cherry-pick"], async (args: CommandArgs) => {
+  // Check if we have a commit hash (the commit ID to cherry-pick)
+  if (args._.length < 1) {
+    return "Error: Invalid or missing commit hash. Use: git cherry-pick <commit>";
+  }
+
+  // Extract the commit hash (should be the second argument)
+  const commitHash = args._[0];
+
+  try {
+    return await cherryPick(dir, commitHash);
+  } catch (error) {
+    return `Error: Failed to cherry-pick commit ${commitHash}. ${error}`;
+  }
+});
+
 // Execute a Git command
 export async function executeGitCommand(commandLine: string): Promise<string> {
   const parts = commandLine.trim().split(/\s+/);
   const command = parts[0];
 
-  const output = await cli.run(commandLine); // new cli
-  if (!output.startsWith("Unknown command")) {
-    return output;
-  }
-
   // Handle git commands
-  if (command !== "git") {
-    return `Command not found: ${command}`;
+  if (command === "git" && parts.length === 1) {
+    // Check if git is initialized for all other commands
+    const isRepo = await isGitRepository(dir);
+    if (!isRepo) {
+      return "Not a git repository. Use 'git init' to create a new repository.";
+    }
+    return 'Welcome to Git interactive playground. Use help to see all available subcommands'
   }
 
-  const gitCommand = parts[1];
-
-  // Check if git is initialized for all other commands
-  const isRepo = await isGitRepository(dir);
-  if (!isRepo && gitCommand !== "init") {
-    return "Not a git repository. Use 'git init' to create a new repository.";
-  }
-
-  // Handle git add
-  if (gitCommand === "add") {
-    if (parts.length < 3) {
-      return "Error: No files specified";
-    }
-
-    const filesToAdd = parts.slice(2);
-
-    const results = [];
-    for (const filepath of filesToAdd) {
-      const result = await addFiles(dir, filepath);
-      results.push(result);
-    }
-
-    // Return a message for all files added
-    return results.join("\n");
-  }
-
-  if (gitCommand === "diff") {
-    return await diffUnstagedChangesVsLastCommit(dir);
-  }
-
-  if (gitCommand === "cherry-pick") {
-    // Check if we have a commit hash (the commit ID to cherry-pick)
-    if (parts.length < 2) {
-      return "Error: Invalid or missing commit hash. Use: git cherry-pick <commit>";
-    }
-
-    // Extract the commit hash (should be the second argument)
-    const commitHash = parts[2];
-
-    try {
-      return await cherryPick(dir, commitHash);
-    } catch (error) {
-      return `Error: Failed to cherry-pick commit ${commitHash}. ${error}`;
-    }
-  }
-
-  // Handle git commit
-  if (gitCommand === "commit") {
-    // Check for -m flag and message
-    if (parts[2] !== "-m" || !parts[3]) {
-      return 'Error: Missing commit message. Use: git commit -m "message"';
-    }
-
-    // Extract commit message (handle quotes)
-    let message = parts.slice(3).join(" ");
-    if (message.startsWith('"') && message.endsWith('"')) {
-      message = message.slice(1, -1);
-    }
-
-    return await commitChanges(dir, message);
-  }
-
-  // handle git show
-  if (gitCommand === "show") {
-    if (parts.length > 2) {
-      return await gitShow(dir, parts[2]);
-    }
-    return await gitShow(dir);
-  }
-
-  if (gitCommand === "config") {
-    if (parts.length < 4) {
-      return "Error: Missing arguments. Usage: git config --global key value";
-    }
-
-    const isGlobal = parts.includes("--global"); // Check for the global flag
-    const configIndex = isGlobal ? 3 : 2; // Config key-value starts at index 3 if --global is present
-    const configPairs = parts.slice(configIndex); // Extract key-value pairs
-
-    const results = [];
-
-    for (let i = 0; i < configPairs.length; i += 2) {
-      const key = configPairs[i];
-      const value = configPairs[i + 1];
-
-      if (!key || !value) {
-        results.push(
-          `Error: Invalid configuration format for ${configPairs[i]}`
-        );
-      } else {
-        const result = await setGitConfig(isGlobal, key, value);
-        results.push(result);
-      }
-    }
-
-    return results.join("\n");
-  }
-
-  // Handle git log
-  if (gitCommand === "log") {
-    if (parts.length > 2) {
-      return await getCommitHistoryLog(dir, parts[2]);
-    }
-    return await getLog(dir);
-  }
-
-  // Handle git branch
-  if (gitCommand === "branch") {
-    // List branches if no arguments
-    if (parts.length === 2) {
-      return await listBranches(dir);
-    }
-
-    // Create new branch
-    const branchName = parts[2];
-    return await createBranch(dir, branchName);
-  }
+  return await cli.run(commandLine); // new cli
 
   // Handle git remote add <name> <url>
+  /*
   if (gitCommand === "remote" && parts[2] === "add") {
     if (parts.length < 5) {
       return "Usage: git remote add <name> <url>";
@@ -410,27 +407,5 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
         error instanceof Error ? error.message : "Unknown error"
       }`;
     }
-  }
-
-  // Handle git checkout
-  if (gitCommand === "checkout") {
-    if (parts.length < 3) {
-      return "Error: No branch specified";
-    }
-
-    const branchName = parts[2];
-    return await checkoutBranch(dir, branchName);
-  }
-
-  // Handle git merge
-  if (gitCommand === "merge") {
-    if (parts.length < 3) {
-      return "Error: No branch specified";
-    }
-
-    const branchName = parts[2];
-    return await mergeBranch(dir, branchName);
-  }
-
-  return `Unknown git command: ${gitCommand}`;
+  }*/
 }

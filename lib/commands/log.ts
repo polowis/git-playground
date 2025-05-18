@@ -17,7 +17,7 @@ export async function getLog(dir: string): Promise<string> {
       output += `Date: ${new Date(
         commit.commit.author.timestamp * 1000
       ).toLocaleString()}\n\n`;
-      output += `    ${commit.commit.message}\n\n`;
+      output += `    ${commit.commit.message}\n`;
     }
 
     return output;
