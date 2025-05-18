@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import TaskView from "@/components/task-view";
 
 export default function GitPlayground() {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
@@ -167,11 +168,14 @@ export default function GitPlayground() {
                     <TabsTrigger value="visualization">Git Graph</TabsTrigger>
                     <TabsTrigger value="files">File Tree</TabsTrigger>
                   </TabsList>
+                  <TaskView />
                   <TabsContent
                     value="visualization"
                     className="flex-1 p-4 overflow-auto"
                   >
-                    <GitVisualization />
+                    
+                      <GitVisualization />
+                    
                   </TabsContent>
                   <TabsContent
                     value="files"

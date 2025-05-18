@@ -1,8 +1,10 @@
+import path from "path";
 import { fs } from "../fs";
 
 export async function readFile(currentDir: string, filename: string) {
   try {
-    const content = await fs.readFile(`${currentDir}/${filename}`, {
+    const filePath = path.join(currentDir, filename);
+    const content = await fs.readFile(filePath, {
       encoding: "utf8",
     });
     return content;
@@ -17,7 +19,8 @@ export async function writeToFile(
   content: string
 ) {
   try {
-    await fs.writeFile(`${currentDir}/${filename}`, content);
+    const filePath = path.join(currentDir, filename);
+    await fs.writeFile(filePath, content);
     return `Wrote to file: ${filename}`;
   } catch (error) {
     return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;

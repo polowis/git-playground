@@ -46,8 +46,8 @@ export default function GitVisualization() {
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
-    canvas.style.width = rect.width + "px";
-    canvas.style.height = rect.height + "px";
+    //canvas.style.width = rect.width + "px";
+    //canvas.style.height = rect.height + "px";
 
     canvas.getContext("2d")?.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -96,7 +96,7 @@ export default function GitVisualization() {
   }
 
   return (
-    <div className="h-full w-full bg-zinc-950 rounded-lg overflow-hidden">
+    <div className="h-screen w-full bg-zinc-950 rounded-lg overflow-auto">
       <canvas ref={canvasRef} className="w-full h-full" />
     </div>
   )

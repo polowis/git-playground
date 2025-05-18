@@ -28,6 +28,7 @@ Git Commands:
   git checkout <branch>         Switch to a branch
   git merge <branch>            Merge a branch into current branch
 
+
 File Operations:
   touch <file>                  Create a new empty file
   echo "content" > <file>       Create/overwrite file with content
@@ -36,6 +37,7 @@ File Operations:
   ls                            List files
   mkdir                         Create a directory
   cd                            Change current directory
+  cp <source> <dest>            Copy file content
 
 Other:
   clear                         Clear the terminal

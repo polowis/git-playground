@@ -13,42 +13,86 @@ import { diffUnstagedChangesVsLastCommit } from "./commands/diff";
 import { readFile, writeToFile } from "./filesystem/file";
 import { gitShow } from "./commands/show";
 import { setGitConfig } from "./commands/config";
+import CLI from "./cli";
+import path from "path";
+import { CommandArgs } from "./cli/cli";
 
 export const dir = "/workspace"; // root dir
 export let currentDir = "/workspace"; // Mutable for file-level commands
+const cli = new CLI();
 
-// Execute a Git command
-export async function executeGitCommand(commandLine: string): Promise<string> {
-  const parts = commandLine.trim().split(/\s+/);
-  const command = parts[0];
+cli.register("help", async () => {
+  return getHelpText();
+});
 
-  // Handle non-git commands
-  if (command === "clear") {
-    return "CLEAR_TERMINAL";
-  }
+cli.register("clear", async () => {
+  return "CLEAR_TERMINAL";
+});
 
-  if (command === "help") {
-    return getHelpText();
-  }
-
-  if (command === "ls") {
-    try {
-      const files = await fs.readdir(currentDir);
-      return files.join("\n") || "(empty directory)";
-    } catch (error) {
-      return `Error: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`;
+cli.register("ls", async (args: CommandArgs) => {
+  try {
+    let files: string[] = [];
+    if (args._.length > 0) {
+      let folderPath = path.join(dir, args._[0] || "");
+      files = await fs.readdir(folderPath);
+    } else {
+      files = await fs.readdir(currentDir);
     }
+    return files.join("\n") || "(empty directory)";
+  } catch (error) {
+    return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+  }
+});
+
+cli.register("cp", async (args: CommandArgs) => {
+  try {
+    // Ensure that source and destination paths are provided
+    if (args._.length !== 2) {
+      return "Error: Please provide both source and destination paths.";
+    }
+
+    const [src, dest] = args._;
+
+    const sourcePath = path.join(dir, src); // src is relative to the base directory
+    const destPath = path.join(dir, dest); // dest is relative to the base directory
+
+    // Check if source file exists
+    const stats = await fs.stat(sourcePath);
+    if (!stats.isFile()) {
+      return `Error: Source path is not a valid file: ${sourcePath}`;
+    }
+
+    // Read the file from the source path
+    const fileContent = await fs.readFile(sourcePath, "utf8");
+
+    await fs.writeFile(destPath, fileContent, "utf8");
+
+    return `File copied from ${sourcePath} to ${destPath}`;
+  } catch (error) {
+    return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+  }
+});
+
+cli.register("touch", async (args: CommandArgs) => {
+  if (args._.length < 1) {
+    return "Error: Missing filename";
   }
 
-  if (command === "touch") {
-    if (parts.length < 2) {
-      return "Error: Missing filename";
+  const filename = args._[0];
+  const filePath = path.join(currentDir, filename);
+
+  try {
+    // Check if the file already exists
+    const stats = await fs.stat(filePath);
+
+    if (stats.isFile()) {
+      return `Error: File ${filename} already exists`;
     }
-    const filename = parts[1];
+  } catch (err) {
+    // If the file doesn't exist, `fs.stat` will throw an error.
     try {
-      await fs.writeFile(`${currentDir}/${filename}`, "");
+      await fs.writeFile(filePath, "", "utf8");
+
       return `Created file: ${filename}`;
     } catch (error) {
       return `Error: ${
@@ -57,70 +101,81 @@ export async function executeGitCommand(commandLine: string): Promise<string> {
     }
   }
 
-  if (command === "mkdir") {
-    if (parts.length < 2) {
-      return "Error: Missing directory name";
-    }
+  return `Error: ${filename} already exists`;
+});
 
-    const dirname = parts[1];
+cli.register("mkdir", async (args: CommandArgs) => {
+  if (args._.length < 1) {
+    return "Error: Missing directory name";
+  }
+  const dirname = args._[0];
 
-    try {
-      await fs.mkdir(`${dir}/${dirname}`);
-      return `Created directory: ${dirname}`;
-    } catch (error) {
-      return `Error creating directory: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`;
-    }
+  try {
+    const filePath = path.join(currentDir, dirname);
+    await fs.mkdir(filePath);
+    return `Created directory: ${dirname}`;
+  } catch (error) {
+    return `Error creating directory: ${
+      error instanceof Error ? error.message : "Unknown error"
+    }`;
+  }
+});
+
+cli.register("cd", async (args: CommandArgs) => {
+  if (args._.length === 0) {
+    return `Current directory: ${currentDir}`;
   }
 
-  if (command === "cd") {
-    if (parts.length < 2) return "Error: Missing directory";
-
-    const target = parts[1];
-    if (target === "/") {
-      currentDir = dir;
-      return `Changed directory to ${currentDir}`;
+  const target = args._[0];
+  let newPath = path.join(currentDir, target);
+  try {
+    if (newPath === "/") {
+      // resolve to root dir
+      newPath = dir;
     }
-
-    if (target === "..") {
-      const segments = currentDir.split("/").filter(Boolean);
-      segments.pop(); // Go up one level
-      currentDir = "/" + segments.join("/");
-      return `Changed directory to ${currentDir}`;
-    }
-
-    const newPath = `${currentDir}/${target}`;
-    try {
-      const stat = await fs.stat(newPath);
-      if (stat.type !== "dir") return `Error: '${target}' is not a directory`;
-      currentDir = newPath;
-      return `Changed directory to ${currentDir}`;
-    } catch {
-      return `Error: Directory '${target}' does not exist`;
-    }
+    const stat = await fs.stat(newPath);
+    if (stat.type !== "dir") return `Error: '${target}' is not a directory`;
+    currentDir = newPath;
+    return `Changed directory to ${currentDir}`;
+  } catch {
+    return `Error: Directory '${target}' does not exist`;
   }
+});
 
-  if (command === "echo") {
-    // Handle echo "content" > file
-    const cmdStr = commandLine.trim();
-    const match = cmdStr.match(/echo\s+"([^"]*)"\s+>\s+(\S+)/);
-
-    if (!match) {
-      return 'Usage: echo "content" > filename';
-    }
-
-    const [, content, filename] = match;
-    return await writeToFile(currentDir, filename, content);
+cli.register("echo", async (arg: CommandArgs) => {
+  const args = arg._;
+  if (args.length < 3 || args[1] !== ">") {
+    return 'Error: Invalid command format. Use: echo "content" > file';
   }
+  const content = args[0];
+  const filename = args[args.length - 1]; // Last part is the filename
 
-  if (command === "cat") {
-    if (parts.length < 2) {
-      return "Error: Missing filename";
-    }
+  try {
+    // override the file
+    await writeToFile(currentDir, filename, content);
 
-    const filename = parts[1];
-    return await readFile(currentDir, filename);
+    return `Content written to: ${filename}`;
+  } catch (error) {
+    return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+  }
+});
+
+cli.register('cat', async(args: CommandArgs) => {
+  if(args._.length < 1) {
+    return "Error: Missing filename";
+  }
+  const filename = args._[0];
+  return await readFile(currentDir, filename)
+})
+
+// Execute a Git command
+export async function executeGitCommand(commandLine: string): Promise<string> {
+  const parts = commandLine.trim().split(/\s+/);
+  const command = parts[0];
+
+  let output = await cli.run(commandLine); // new cli
+  if (!output.startsWith("Unknown command")) {
+    return output;
   }
 
   if (command === "rm") {

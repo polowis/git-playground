@@ -14,6 +14,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import GitSyntaxHighlighter from "./git-syntax-highlighter";
 import "../styles/terminal.css";
 import { useRepoContext } from "./context/RepoContext";
+import HightlightText from "./utils/ColorInput";
 
 interface TerminalProps {
   onCommand: (command: string) => Promise<string>;
@@ -164,12 +165,12 @@ const Terminal = forwardRef(function Terminal(
               <div className="flex terminal-input">
                 <span className="text-green-500 mr-2">$</span>
                 <span>
-                  <GitSyntaxHighlighter command={line.content} />
+                  <HightlightText text={line.content} />
                 </span>
               </div>
             ) : (
               <div className="pl-4 text-zinc-400 terminal-output">
-                <GitSyntaxHighlighter command={line.content} />
+                <HightlightText text={line.content} />
               </div>
             )}
           </div>
