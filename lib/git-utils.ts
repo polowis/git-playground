@@ -29,6 +29,8 @@ Git Commands:
   git merge <branch>            Merge a branch into current branch
   git show
   git diff
+  git reset
+  git reset HEAD <file>
 
 
 File Operations:

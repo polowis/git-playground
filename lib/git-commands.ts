@@ -16,6 +16,7 @@ import { setGitConfig } from "./commands/config";
 import CLI from "./cli";
 import path from "path";
 import { CommandArgs } from "./cli/cli";
+import { gitReset, gitResetAll } from "./commands/reset";
 
 export const dir = "/workspace"; // root dir
 export let currentDir = "/workspace"; // Mutable for file-level commands
@@ -33,9 +34,9 @@ cli.register("pwd", async () => {
   return dir;
 });
 
-cli.register("whoami", async() => {
-  return 'Git sandbox user'
-})
+cli.register("whoami", async () => {
+  return "Git sandbox user";
+});
 
 cli.register("ls", async (args: CommandArgs) => {
   try {
@@ -377,6 +378,21 @@ cli.register(["git", "cherry-pick"], async (args: CommandArgs) => {
   } catch (error) {
     return `Error: Failed to cherry-pick commit ${commitHash}. ${error}`;
   }
+});
+
+cli.register(["git", "reset"], async (args: CommandArgs) => {
+  if (args._.length === 0) {
+    // if no args provided, default to git reset HEAD --mixed
+    return gitResetAll(dir);
+  }
+  if (args._.length == 2) {
+    if (args._[0] === "HEAD") {
+      const fullPath = path.join(currentDir, args._[1]);
+      return gitReset(dir, fullPath.replace(dir + "/", ""));
+    }
+    return "Unsupported in this git implementation";
+  }
+  return "Unsupported in this git implementation";
 });
 
 // Execute a Git command

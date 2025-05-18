@@ -27,3 +27,13 @@ export const initialGitState: GitState = {
 export function generateHash(): string {
   return Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10)
 }
+
+
+// index
+export const FILEPATH = 0;
+export const HEAD = 1;
+export const WORKDIR = 2;
+export const STAGE = 3;
+
+// Status Matrix State
+export const UNCHANGED = 1;
