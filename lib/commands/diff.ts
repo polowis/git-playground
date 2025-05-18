@@ -124,9 +124,9 @@ export async function diffUnstagedChangesVsLastCommit(
             return
           }
           const symbol = part.added ? "+" : part.removed ? "-" : " ";
-          diffResult += symbol + part.value + ` (${file}) \n`;
+          diffResult += symbol + part.value + ` (${file})\n`;
         });
-        diffResult += '\n\n';
+        diffResult += '\n';
       }
     }
     if(diffResult.trim().length === 0) return 'No changes';

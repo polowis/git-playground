@@ -6,6 +6,7 @@ import { projectOverviewTask } from "./steps/project-overview";
 import { stagingAreaTask } from "./steps/stagingArea";
 import { commitFileTask } from "./steps/commitFile";
 import { logHistoryTask } from "./steps/log-history";
+import { gitDiffTask } from "./steps/git-diff";
 
 export interface Task {
   id: string;
@@ -25,4 +26,5 @@ export const tasks: Task[] = [
   stagingAreaTask,
   commitFileTask,
   logHistoryTask,
+  gitDiffTask
 ];

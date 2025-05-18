@@ -34,7 +34,7 @@ export default function TaskView() {
       </CardHeader>
       <ScrollArea className="h-[75%] overflow-auto">
         <CardContent className="p-4 pt-0">
-          <div className="markdown">
+          <div className="markdown line-break">
             <Markdown>{activeTaskContent}</Markdown>
           </div>
         </CardContent>

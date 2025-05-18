@@ -12,6 +12,7 @@ $ git commit -m "Add alice.txt with greeting"
 
 > 💡 The -m flag stands for "message." You should always include a short, clear message that explains what this commit does. It helps you (and others!) understand the history of your project later.
 
+---
 
 ### ✅ What Just Happened?
 When you run git commit, Git takes everything you staged (with `git add`) and stores a snapshot of those changes in the repository’s history.
