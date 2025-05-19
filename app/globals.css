@@ -118,12 +118,12 @@ body {
     margin-top: calc(var(--spacing) * 4);
   }
 
-
   pre {
     background: #303030;
     overflow: auto;
     margin: 12px 0;
     padding: 4px;
+    white-space: pre-wrap;
   }
 
   blockquote {
