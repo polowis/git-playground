@@ -11,9 +11,14 @@ import {
 } from "react";
 import { useTerminal } from "./context/TerminalContext";
 import { ScrollArea } from "./ui/scroll-area";
-import "../styles/terminal.css";
 import { useRepoContext } from "./context/RepoContext";
 import HightlightText from "./utils/ColorInput";
+import dynamic from "next/dynamic";
+import "../styles/terminal.css";
+import path from "path";
+import { currentDir } from "@/lib/git-commands";
+
+const NanoEditor = dynamic(() => import("./libs/NanoEditor"));
 
 interface TerminalProps {
   onCommand: (command: string) => Promise<string>;
@@ -34,6 +39,8 @@ const Terminal = forwardRef(function Terminal(
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const { triggerRefresh, loadFiles } = useRepoContext();
+  const [openNanoOverlay, setOpenNanoOverlay] = useState<boolean>(false);
+  const [nanoFilepath, setNanoFilepath] = useState<string>("");
 
   const inputLines = lines.filter((line) => line.type === "input");
 
@@ -104,6 +111,13 @@ const Terminal = forwardRef(function Terminal(
 
       try {
         // Execute the command and get the output
+        if (command.startsWith("nano")) {
+          const cmds = command.split(" ");
+          if (cmds.length < 2) return;
+          setNanoFilepath(path.join(currentDir, cmds[1]));
+          setOpenNanoOverlay(true);
+          return;
+        }
         const output = await onCommand(command);
 
         // Handle special clear command
@@ -150,6 +164,18 @@ const Terminal = forwardRef(function Terminal(
   const focusInput = () => {
     inputRef.current?.focus();
   };
+
+  if (openNanoOverlay) {
+    return (
+      <NanoEditor
+        filepath={nanoFilepath}
+        onClose={() => {
+          setNanoFilepath(nanoFilepath)
+          setOpenNanoOverlay(false);
+        }}
+      />
+    );
+  }
 
   return (
     <div

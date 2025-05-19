@@ -28,6 +28,18 @@ export default function CommandHelp() {
             <code className="bg-zinc-800 px-2 py-1 rounded">git log</code>
             <p className="mt-1 text-zinc-400">Show commit logs</p>
           </li>
+          <li>
+            <code className="bg-zinc-800 px-2 py-1 rounded">git diff</code>
+            <p className="mt-1 text-zinc-400">Show diff logs</p>
+          </li>
+          <li>
+            <code className="bg-zinc-800 px-2 py-1 rounded">git reset</code>
+            <p className="mt-1 text-zinc-400">Reset changes</p>
+          </li>
+          <li>
+            <code className="bg-zinc-800 px-2 py-1 rounded">git show</code>
+            <p className="mt-1 text-zinc-400">Show latest commit</p>
+          </li>
         </ul>
       </div>
 
@@ -49,6 +61,11 @@ export default function CommandHelp() {
           <li>
             <code className="bg-zinc-800 px-2 py-1 rounded">git merge &lt;branch&gt;</code>
             <p className="mt-1 text-zinc-400">Merge specified branch into current branch</p>
+          </li>
+
+          <li>
+            <code className="bg-zinc-800 px-2 py-1 rounded">git cherry-pick &lt;commit&gt;</code>
+            <p className="mt-1 text-zinc-400">Pick and merge a specified commit into current branch</p>
           </li>
         </ul>
       </div>
@@ -93,6 +110,26 @@ export default function CommandHelp() {
           <li>
             <code className="bg-zinc-800 px-2 py-1 rounded">mkdir &lt;foldername&gt;</code>
             <p className="mt-1 text-zinc-400">Create new directory in the current directory</p>
+          </li>
+          <li>
+            <code className="bg-zinc-800 px-2 py-1 rounded">cp &lt;source&gt; &lt;dest&gt;</code>
+            <p className="mt-1 text-zinc-400">Copy file content from one to another</p>
+          </li>
+          <li>
+            <code className="bg-zinc-800 px-2 py-1 rounded">cd &lt;folder&gt;</code>
+            <p className="mt-1 text-zinc-400">Change working directory</p>
+          </li>
+          <li>
+            <code className="bg-zinc-800 px-2 py-1 rounded">rm &lt;file|folder&gt;</code>
+            <p className="mt-1 text-zinc-400">Remove a file or folder</p>
+          </li>
+          <li>
+            <code className="bg-zinc-800 px-2 py-1 rounded">nano &lt;filepath&gt;</code>
+            <p className="mt-1 text-zinc-400">Open nano editor</p>
+          </li>
+           <li>
+            <code className="bg-zinc-800 px-2 py-1 rounded">echo</code>
+            <p className="mt-1 text-zinc-400">Write</p>
           </li>
         </ul>
       </div>
