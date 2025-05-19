@@ -129,7 +129,7 @@ export default function GitPlayground() {
 
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={toggleHelp}>
-                      <HelpCircle className="w-4 h-4 mr-2" />
+                      <HelpCircle className="w-4 h-4" />
                       Help
                     </Button>
                     <Button
@@ -137,7 +137,7 @@ export default function GitPlayground() {
                       size="sm"
                       onClick={resetPlayground}
                     >
-                      <RefreshCcw className="w-4 h-4 mr-2" />
+                      <RefreshCcw className="w-4 h-4" />
                       Reset
                     </Button>
                     <Button variant="outline" size="sm" asChild>
@@ -146,7 +146,7 @@ export default function GitPlayground() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <BookOpen className="w-4 h-4 mr-2" />
+                        <BookOpen className="w-4 h-4" />
                         Git Docs
                       </a>
                     </Button>
@@ -156,7 +156,7 @@ export default function GitPlayground() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <GithubIcon />
+                        <GithubIcon className="w-4 h-4" />
                         Star this repo
                       </a>
                     </Button>
