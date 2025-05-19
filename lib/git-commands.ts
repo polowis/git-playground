@@ -159,7 +159,7 @@ cli.register("echo", async (arg: CommandArgs) => {
   let content = args[0];
   const filename = args[args.length - 1]; // Last part is the filename
 
-  content = content.replace(/\\n/g, '\n'); // Converts all occurrences of '\n' to actual newline characters
+  content = content.replace(/\\n/g, "\n"); // Converts all occurrences of '\n' to actual newline characters
 
   try {
     // override the file
@@ -399,6 +399,11 @@ cli.register(["git", "reset"], async (args: CommandArgs) => {
       return gitReset(dir, fullPath.replace(dir + "/", ""));
     }
     return "Unsupported in this git implementation";
+  }
+  if (args._.length == 1) {
+    // default to HEAD, expect filepath
+    const fullPath = path.join(currentDir, args._[0]);
+    return gitReset(dir, fullPath.replace(dir + "/", ""));
   }
   return "Unsupported in this git implementation";
 });
