@@ -26,6 +26,16 @@ import TaskView from "@/components/task-view";
 import { deleteEverything } from "@/lib/filesystem/file";
 import { TaskProvider } from "@/components/context/TaskContext";
 import Image from "next/image";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function GitPlayground() {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
@@ -132,14 +142,30 @@ export default function GitPlayground() {
                       <HelpCircle className="w-4 h-4" />
                       Help
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={resetPlayground}
-                    >
-                      <RefreshCcw className="w-4 h-4" />
-                      Reset
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <RefreshCcw className="w-4 h-4" />
+                          Reset
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete all of your files and folders
+                        </AlertDialogDescription>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={resetPlayground}>
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+
                     <Button variant="outline" size="sm" asChild>
                       <a
                         href="https://git-scm.com/doc"
@@ -195,12 +221,14 @@ export default function GitPlayground() {
                       <TabsTrigger value="visualization">Git Graph</TabsTrigger>
                       <TabsTrigger value="files">File Tree</TabsTrigger>
                       <TabsTrigger value="tasks">Learn</TabsTrigger>
-                      <TabsTrigger value="best-practice">Best Practice</TabsTrigger>
+                      <TabsTrigger value="best-practice">
+                        Best Practice
+                      </TabsTrigger>
                     </TabsList>
                     <TabsContent value="tasks" className="h-full">
                       <TaskView />
                     </TabsContent>
-                    <TabsContent value='best-practice'>
+                    <TabsContent value="best-practice">
                       <div className="p-4">To be added</div>
                     </TabsContent>
 

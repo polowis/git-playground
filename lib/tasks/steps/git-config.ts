@@ -2,7 +2,7 @@ import { Task } from "..";
 
 export const gitConfigTask: Task = {
   id: "git-config",
-  title: "Setup your identity",
+  title: "🧑‍💻 Setup your identity",
   description: "Use git config to setup your identity",
   content: "setup-your-identity.md",
   validate: async () => {

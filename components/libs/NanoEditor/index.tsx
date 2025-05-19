@@ -190,7 +190,7 @@ const NanoSimulator = ({ filepath, onClose }: Props) => {
     cursor.current.row += 1;
     cursor.current.col = 0;
 
-    // 💡 Ensure new cursor row is within viewport
+    // make sure new cursor row is within viewport
     if (cursor.current.row >= viewportStart.current + (rows - 3)) {
       viewportStart.current = cursor.current.row - (rows - 4);
     }

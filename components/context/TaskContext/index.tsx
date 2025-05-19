@@ -8,6 +8,7 @@ interface TaskContextType {
   activeTaskId: string;
   activeTaskContent: string;
   activeTask?: Task;
+  setActiveTaskId: React.Dispatch<React.SetStateAction<string>>;
   getActiveTaskDetails: () => Promise<string>;
   completeTask: () => void;
   previousTask: () => void;
@@ -119,6 +120,7 @@ export const TaskProvider = ({ children }: TaskProviderProps) => {
   return (
     <TaskContext.Provider
       value={{
+        setActiveTaskId,
         activeTaskId,
         getActiveTaskDetails,
         completeTask,
