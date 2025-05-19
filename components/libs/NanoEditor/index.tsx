@@ -106,7 +106,7 @@ const NanoSimulator = ({ filepath, onClose }: Props) => {
     term.write("\x1b[?25l");
     term.reset();
     term.write("\x1b[30;47m"); // Black text on white background
-    term.write("GNU nano 6.0   File: newfile.txt\r\n");
+    term.write(`GNU nano 6.0   File: ${filepath}\r\n`);
     term.write("\x1b[0m"); // Reset to default colors
     term.write("\r\n"); // Extra line after header
 
