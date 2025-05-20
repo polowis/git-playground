@@ -8,7 +8,7 @@ A sandbox environment to learn and experiment with Git.
 
 - 🖥️ Built-in terminal for basic UNIX and Git commands
 - 📁 File tree for visual file navigation
-- 🌳 Git commit tree visualization to see your project's history grow
+- 🌳 Git commit tree visualisation to see your project's history grow
 - 📝 Guided tutorials with checkpoints to help you stay on track
 - 💻 Integrated code editor for editing files directly
 

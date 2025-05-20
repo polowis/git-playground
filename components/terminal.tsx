@@ -208,7 +208,7 @@ const Terminal = forwardRef(function Terminal(
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
-            className="bg-transparent outline-none flex-1 text-zinc-100 terminal-input"
+            className="bg-transparent outline-none !overflow-auto flex-1 text-zinc-100 terminal-input"
             autoFocus
             disabled={isProcessing}
           />

@@ -32,7 +32,7 @@ export async function getVisualizationData(dir: string): Promise<VisualizationDa
       currentBranch,
     };
   } catch (error) {
-    console.error("Error getting visualization data:", error);
+    console.error("Error getting visualisation data:", error);
     return {
       commits: [],
       branches: [],

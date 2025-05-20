@@ -221,9 +221,7 @@ export default function GitPlayground() {
                       <TabsTrigger value="visualization">Git Graph</TabsTrigger>
                       <TabsTrigger value="files">File Tree</TabsTrigger>
                       <TabsTrigger value="tasks">Learn</TabsTrigger>
-                      <TabsTrigger value="best-practice">
-                        Best Practice
-                      </TabsTrigger>
+                     
                     </TabsList>
                     <TabsContent value="tasks" className="h-full">
                       <TaskView />
