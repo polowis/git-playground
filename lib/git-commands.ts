@@ -153,6 +153,9 @@ cli.register("cd", async (args: CommandArgs) => {
 
 cli.register("echo", async (arg: CommandArgs) => {
   const args = arg._;
+  if(args.length === 1) {
+    return args[0];
+  }
   if (args.length < 3 || (args[1] !== ">" && args[1] !== ">>")) {
     return 'Error: Invalid command format. Use: echo "content" > file';
   }
