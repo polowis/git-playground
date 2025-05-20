@@ -11,7 +11,10 @@ export async function getCurrentBranch(dir: string): Promise<string> {
   }
 }
 
-export async function createBranch(dir: string, branchName: string): Promise<string> {
+export async function createBranch(
+  dir: string,
+  branchName: string
+): Promise<string> {
   try {
     await git.branch({ fs, dir, ref: branchName });
     return `Created branch '${branchName}'`;
@@ -20,7 +23,6 @@ export async function createBranch(dir: string, branchName: string): Promise<str
     return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
   }
 }
-
 
 export async function listBranches(dir: string): Promise<string> {
   try {
@@ -46,4 +48,17 @@ export async function listBranches(dir: string): Promise<string> {
     console.error("Error listing branches:", error);
     return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
   }
+}
+
+export async function isBranchExist(
+  dir: string,
+  branchName: string
+): Promise<boolean> {
+  const branches = await git.listBranches({ fs, dir });
+  for (const branch of branches) {
+    if (branch === branchName) {
+      return true;
+    }
+  }
+  return false;
 }

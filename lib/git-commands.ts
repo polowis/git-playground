@@ -2,8 +2,8 @@ import * as git from "isomorphic-git";
 import { fs } from "./fs";
 import { mergeBranch } from "./commands/merge";
 import { commitChanges } from "./commands/commit";
-import { createBranch, listBranches } from "./commands/branch";
-import { checkoutBranch } from "./commands/checkout";
+import { createBranch, isBranchExist, listBranches } from "./commands/branch";
+import { checkoutBranch, checkoutFiles } from "./commands/checkout";
 import { formatStatus, getHelpText, isGitRepository } from "./git-utils";
 import { getCommitHistoryLog, getLog } from "./commands/log";
 import { addFiles } from "./commands/staging";
@@ -309,14 +309,36 @@ cli.register(["git", "log"], async (args: CommandArgs) => {
   return await getLog(dir);
 });
 
+cli.register(["git", "restore"], async (args: CommandArgs) => {
+  if (args._.length < 1) {
+    return "Error: filepath must be present";
+  }
+  return await checkoutFiles(dir, args._[0]);
+});
+
 // TODO: support -b flag
 cli.register(["git", "checkout"], async (args: CommandArgs) => {
+  if (args.b) {
+    // -b flag present
+    const branchName = args.b as string;
+    const branchExist = await isBranchExist(dir, branchName);
+    if (branchExist) {
+      return `Branch: ${args.b} already exists`;
+    }
+    await createBranch(dir, branchName);
+    return await checkoutBranch(dir, branchName);
+  }
+
   if (args._.length < 1) {
     return "Error: No branch specified";
   }
 
-  const branchName = args._[0];
-  return await checkoutBranch(dir, branchName);
+  if (args["--"]) {
+    // files checkout flag
+    return await checkoutFiles(dir, args._[0]);
+  } else {
+    return await checkoutBranch(dir, args._[0]);
+  }
 });
 
 cli.register(["git", "merge"], async (args: CommandArgs) => {
