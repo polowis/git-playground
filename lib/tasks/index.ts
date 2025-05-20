@@ -9,6 +9,7 @@ import { logHistoryTask } from "./steps/log-history";
 import { gitDiffTask } from "./steps/git-diff";
 import { undoingTask } from "./steps/undoing";
 import { restoreFileTask } from "./steps/restore";
+import { branchingTask } from "./steps/branching";
 
 export interface Task {
   id: string;
@@ -30,5 +31,6 @@ export const tasks: Task[] = [
   logHistoryTask,
   gitDiffTask,
   undoingTask,
-  restoreFileTask
+  restoreFileTask,
+  branchingTask,
 ];

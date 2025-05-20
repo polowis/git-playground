@@ -64,6 +64,11 @@ export default function CommandHelp() {
           </li>
 
           <li>
+            <code className="bg-zinc-800 px-2 py-1 rounded">git restore &lt;filename&gt;</code>
+            <p className="mt-1 text-zinc-400">Restore a file</p>
+          </li>
+
+          <li>
             <code className="bg-zinc-800 px-2 py-1 rounded">git cherry-pick &lt;commit&gt;</code>
             <p className="mt-1 text-zinc-400">Pick and merge a specified commit into current branch</p>
           </li>

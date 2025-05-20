@@ -50,9 +50,7 @@ export const undoingTask: Task = {
         stageStatus,
       ] of statusMatrix) {
         if (filepath === "alice.txt") {
-          // File is modified in working directory (2)
-          // but NOT staged (stageStatus 0)
-          if (headStatus === 0 && workdirStatus === 2 && stageStatus === 0) {
+          if (headStatus === 1 && workdirStatus === 2 && stageStatus === 1) {
             return true;
           }
         }

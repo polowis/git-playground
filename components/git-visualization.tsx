@@ -217,7 +217,7 @@ function drawGitGraph(ctx: CanvasRenderingContext2D, width: number, height: numb
     const tagY = pos.y - 30
 
     // Tag background
-    ctx.fillStyle = branch === "main" ? "#0891b2" : "#ca8a04" // cyan-600 : yellow-600
+    ctx.fillStyle = branch === "master" ? "#0891b2" : "#ca8a04" // cyan-600 : yellow-600
     ctx.beginPath()
     ctx.roundRect(tagX, tagY, tagWidth, tagHeight, 4)
     ctx.fill()

@@ -1,5 +1,5 @@
-
 import { Task } from "..";
+import * as git from "isomorphic-git";
 
 export const restoreFileTask: Task = {
   id: "restore-file",
@@ -37,10 +37,17 @@ export const restoreFileTask: Task = {
     const fullPath = `${dir}/${filepath}`;
 
     try {
+      const commitOid = await git.resolveRef({ fs, dir, ref: "HEAD" });
+      const { blob } = await git.readBlob({
+        fs,
+        dir,
+        oid: commitOid,
+        filepath: filepath,
+      });
+      const committedContent = new TextDecoder().decode(blob);
       const fileContent = await fs.readFile(fullPath, { encoding: "utf8" });
-
       // Check if file content matches the committed version
-      if (fileContent === "Hello Git!\n") {
+      if (fileContent === committedContent) {
         return true; // Success: user has discarded changes
       }
 
