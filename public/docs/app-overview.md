@@ -19,7 +19,7 @@ There are three tabs here:
 Shows your project files and folders — just like a file explorer.
 Watch it update as you create, edit, or delete files.
 
-### 🌳 Git Tree Visualization
+### 🌳 Git Graph
 
 This gives you a visual map of your Git history.
 You’ll see commits appear here, branches grow, and your project evolve step-by-step.

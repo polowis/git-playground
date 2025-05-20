@@ -16,18 +16,6 @@ export const stagingAreaTask: Task = {
       await git.init({ fs, dir });
     }
 
-    // Check if file already exists
-    const fileExists = await fs
-      .stat(`${dir}/alice.txt`)
-      .then(() => true)
-      .catch(() => false);
-
-    // Only create if not there
-    if (!fileExists) {
-      await fs.writeFile(`${dir}/alice.txt`, "Hello Git!\n");
-    }
-
-    await git.resetIndex({ fs, dir, filepath: "alice.txt" });
     return true;
   },
 
@@ -49,7 +37,7 @@ export const stagingAreaTask: Task = {
   },
 
   cleanup: async ({ fs, dir }) => {
-    try {
+    /*try {
       // Remove file if it exists
       await fs.unlink(`${dir}/alice.txt`).catch(() => {});
 
@@ -58,6 +46,6 @@ export const stagingAreaTask: Task = {
       return true;
     } catch {
       return false;
-    }
+    }*/
   },
 };

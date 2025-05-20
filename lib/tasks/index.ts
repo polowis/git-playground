@@ -8,6 +8,7 @@ import { commitFileTask } from "./steps/commitFile";
 import { logHistoryTask } from "./steps/log-history";
 import { gitDiffTask } from "./steps/git-diff";
 import { undoingTask } from "./steps/undoing";
+import { restoreFileTask } from "./steps/restore";
 
 export interface Task {
   id: string;
@@ -28,5 +29,6 @@ export const tasks: Task[] = [
   commitFileTask,
   logHistoryTask,
   gitDiffTask,
-  undoingTask
+  undoingTask,
+  restoreFileTask
 ];
