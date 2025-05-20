@@ -1,7 +1,5 @@
-import * as git from "isomorphic-git";
+
 import { Task } from "..";
-import { isGitRepository } from "@/lib/git-utils";
-import { commitChanges } from "@/lib/commands/commit";
 
 export const restoreFileTask: Task = {
   id: "restore-file",
@@ -11,7 +9,7 @@ export const restoreFileTask: Task = {
   content: "restore-file.md",
 
   init: async ({ fs, dir }) => {
-    const filepath = "alice.txt";
+    /*const filepath = "alice.txt";
 
     // Ensure repo exists
     const isRepo = await isGitRepository(dir);
@@ -31,7 +29,7 @@ export const restoreFileTask: Task = {
       "I met an interesting turtle while the song on the radio blasted away.\n";
     await fs.writeFile(`${dir}/${filepath}`, modifiedContent);
 
-    return true;
+    return true;*/
   },
 
   validate: async ({ fs, dir }) => {
@@ -53,12 +51,12 @@ export const restoreFileTask: Task = {
   },
 
   cleanup: async ({ fs, dir }) => {
-    try {
+    /*try {
       await fs.unlink(`${dir}/alice.txt`).catch(() => {});
       await git.remove({ fs, dir, filepath: "alice.txt" }).catch(() => {});
       return true;
     } catch {
       return false;
-    }
+    }*/
   },
 };

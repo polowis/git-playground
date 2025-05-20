@@ -9,7 +9,7 @@ We will also add some more content to `alice.txt` and learn how to recover from 
 **Step 1: Modify the File**
 Before we begin, a warning: this next step might be a little tricky. We’ll need to add more content to `alice.txt`.
 
-Open `alice.txt` and type your favorite line, or use this as an example:
+Open `alice.txt` in your `File Tree` and type your favorite line, or use this as an example:
 
 e.g: I met an interesting turtle while the song on the radio blasted away.
 

@@ -1,7 +1,5 @@
 import { getStatus } from "@/lib/commands/status";
-import * as git from "isomorphic-git";
 import { Task } from "..";
-import { isGitRepository } from "@/lib/git-utils";
 
 export const stagingAreaTask: Task = {
   id: "staging-area",
@@ -11,12 +9,12 @@ export const stagingAreaTask: Task = {
 
   init: async ({ fs, dir }) => {
     // Ensure Git repo exists
-    const isRepo = await isGitRepository(dir);
+    /*const isRepo = await isGitRepository(dir);
     if (!isRepo) {
       await git.init({ fs, dir });
     }
 
-    return true;
+    return true;*/
   },
 
   validate: async ({ fs, dir }) => {

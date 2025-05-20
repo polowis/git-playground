@@ -1,8 +1,5 @@
-import * as git from "isomorphic-git";
 import { Task } from "..";
-import { isGitRepository } from "@/lib/git-utils";
 import { getStatus } from "@/lib/commands/status";
-import { commitChanges } from "@/lib/commands/commit";
 
 export const undoingTask: Task = {
   id: "undoing",
@@ -12,7 +9,7 @@ export const undoingTask: Task = {
 
   init: async ({ fs, dir }) => {
     // Ensure the repo exists
-    const isRepo = await isGitRepository(dir);
+    /*const isRepo = await isGitRepository(dir);
     if (!isRepo) {
       await git.init({ fs, dir });
     }
@@ -39,7 +36,7 @@ export const undoingTask: Task = {
       await git.add({ fs, dir, filepath: "alice.txt" });
     }
 
-    return true;
+    return true;*/
   },
 
   validate: async ({ dir }) => {
@@ -68,12 +65,13 @@ export const undoingTask: Task = {
   },
 
   cleanup: async ({ fs, dir }) => {
+    /*
     try {
       await fs.unlink(`${dir}/alice.txt`).catch(() => {});
       await git.remove({ fs, dir, filepath: "alice.txt" }).catch(() => {});
       return true;
     } catch {
       return false;
-    }
+    }*/
   },
 };
