@@ -40,7 +40,7 @@ index abc1234..def5678 100644
 --- a/alice.txt
 +++ b/alice.txt
 @@ -1 +1,2 @@
- Hello, world!
+ Hello Git!
 +I met an interesting turtle while the song on the radio blasted away.
 ```
 

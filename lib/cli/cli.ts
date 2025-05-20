@@ -73,6 +73,11 @@ class CLI {
     for (let i = 0; i < tokens.length; i++) {
       const token = tokens[i];
 
+      if (token === "--") {
+        args["--"] = true;
+        continue;
+      }
+
       if (token.startsWith("--")) {
         const key = token.slice(2);
         const next = tokens[i + 1];
@@ -92,7 +97,7 @@ class CLI {
           i++;
         }
       } else {
-        args._.push(token); // ← collect positional arguments
+        args._.push(token); // collect positional arguments
       }
     }
 
