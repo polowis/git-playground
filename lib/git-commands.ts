@@ -2,7 +2,12 @@ import * as git from "isomorphic-git";
 import { fs } from "./fs";
 import { mergeBranch } from "./commands/merge";
 import { commitChanges } from "./commands/commit";
-import { createBranch, isBranchExist, listBranches } from "./commands/branch";
+import {
+  createBranch,
+  deleteBranch,
+  isBranchExist,
+  listBranches,
+} from "./commands/branch";
 import { checkoutBranch, checkoutFiles } from "./commands/checkout";
 import { formatStatus, getHelpText, isGitRepository } from "./git-utils";
 import { getCommitHistoryLog, getLog } from "./commands/log";
@@ -153,7 +158,7 @@ cli.register("cd", async (args: CommandArgs) => {
 
 cli.register("echo", async (arg: CommandArgs) => {
   const args = arg._;
-  if(args.length === 1) {
+  if (args.length === 1) {
     return args[0];
   }
   if (args.length < 3 || (args[1] !== ">" && args[1] !== ">>")) {
@@ -371,6 +376,14 @@ cli.register(["git", "show"], async (args: CommandArgs) => {
 
 // TODO support -m flag for rename branch
 cli.register(["git", "branch"], async (args: CommandArgs) => {
+  if (args.d) {
+    // delete flag
+    if(typeof args.d === 'boolean') {
+      return "You need to specify a branch to be deleted";
+    }
+    const branchName = args.d as string;
+    return await deleteBranch(dir, branchName);
+  }
   // List branches if no arguments
   if (args._.length === 0) {
     return await listBranches(dir);

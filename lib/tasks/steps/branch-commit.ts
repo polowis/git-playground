@@ -4,7 +4,7 @@ import * as git from "isomorphic-git";
 export const branchingCommitTask: Task = {
   id: "branching-commit",
   title: "🎭 The Disappearing Trick",
-  description: '',
+  description: 'Parallel Worlds: A File in One, Gone in Another',
   content: "branching-commit.md",
   validate: async ({ fs, dir }) => {
     const filepath = "turtle.txt";

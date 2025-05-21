@@ -62,3 +62,15 @@ export async function isBranchExist(
   }
   return false;
 }
+
+export async function deleteBranch(dir: string, branchName: string) {
+  if (branchName === "master")
+    return "error: cannot delete master branch in this sandbox";
+  try {
+    await git.deleteBranch({ fs, dir, ref: branchName });
+    return `Successfully deleted branch ${branchName}`;
+  } catch (error) {
+    console.error("Error listing branches:", error);
+    return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+  }
+}

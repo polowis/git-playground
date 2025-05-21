@@ -41,7 +41,7 @@ export default function TaskView() {
   return (
     <Card className="bg-zinc-900 text-white mx-4 mt-2 h-[90%] rounded-md border-none">
       <CardHeader className="p-4 flex flex-row items-center justify-between">
-        <div className="flex">
+        <div className="">
           <CardTitle className="flex items-center gap-2">
             <div className="rounded-full font-bold border w-10 h-10 flex items-center justify-center">
               {tasks.findIndex((t) => t.id === activeTask?.id)}

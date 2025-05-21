@@ -12,7 +12,7 @@ import { useRepoContext } from "./context/RepoContext";
 import { ScrollArea } from "./ui/scroll-area";
 
 export default function FileTree() {
-  const [isRepo, setIsRepo] = useState(false);
+  //const [isRepo, setIsRepo] = useState(false);
   const [currentBranch, setCurrentBranch] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +26,7 @@ export default function FileTree() {
 
         // Check if it's a git repository
         const repoStatus = await isGitRepository(dir);
-        setIsRepo(repoStatus);
+        //setIsRepo(repoStatus);
 
         // Get files
         loadFiles();
@@ -49,14 +49,14 @@ export default function FileTree() {
     fetchData();
   }, [currentDir]);
 
-  if (!isRepo) {
+  /*if (!isRepo) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-zinc-500">
         <p>Git repository not initialized</p>
         <p className="text-sm mt-2">Use &apos;git init&apos; to start</p>
       </div>
     );
-  }
+  }*/
 
   return (
     <ScrollArea className="h-full overflow-auto">

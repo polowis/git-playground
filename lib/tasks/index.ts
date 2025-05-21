@@ -11,6 +11,7 @@ import { undoingTask } from "./steps/undoing";
 import { restoreFileTask } from "./steps/restore";
 import { branchingTask } from "./steps/branching";
 import { branchingCommitTask } from "./steps/branch-commit";
+import { mergeTask } from "./steps/merging";
 
 export interface Task {
   id: string;
@@ -34,5 +35,6 @@ export const tasks: Task[] = [
   undoingTask,
   restoreFileTask,
   branchingTask,
-  branchingCommitTask
+  branchingCommitTask,
+  mergeTask
 ];

@@ -2,8 +2,10 @@ import * as git from "isomorphic-git";
 import { fs } from "../fs";
 import { getCurrentBranch } from "./branch";
 
-
-export async function mergeBranch(dir: string, branchName: string): Promise<string> {
+export async function mergeBranch(
+  dir: string,
+  branchName: string
+): Promise<string> {
   const authorName = localStorage.getItem("global.user.name") || "Git user";
   const authorEmail =
     localStorage.getItem("global.user.email") || "user@gitplayground.com";
@@ -18,6 +20,11 @@ export async function mergeBranch(dir: string, branchName: string): Promise<stri
         name: authorName,
         email: authorEmail,
       },
+    });
+    await git.checkout({
+      fs,
+      dir,
+      ref: currentBranch,
     });
 
     return `Merged branch '${branchName}' into ${currentBranch}`;

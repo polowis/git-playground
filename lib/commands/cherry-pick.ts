@@ -1,9 +1,10 @@
 import * as git from "isomorphic-git";
 import { fs } from "../fs";
+import { getCurrentBranch } from "./branch";
 
 // TODO
 export async function cherryPick(dir: string, commitHash: string) {
-  const targetBranch = "master";
+  const targetBranch = await getCurrentBranch(dir);
   await git.checkout({ fs: fs, dir, ref: targetBranch });
   const fullOid = await git.expandOid({ fs, dir, oid: commitHash });
 
@@ -15,6 +16,11 @@ export async function cherryPick(dir: string, commitHash: string) {
     author: { name: "Git User", email: "user@gitplayground.com" },
   });
 
+  await git.checkout({
+    fs,
+    dir,
+    ref: targetBranch,
+  });
 
   await git.commit({
     fs: fs,
@@ -23,5 +29,5 @@ export async function cherryPick(dir: string, commitHash: string) {
     message: `Cherry-pick commit ${commitHash}`,
   });
 
-  return 'Success'
+  return "Success";
 }
