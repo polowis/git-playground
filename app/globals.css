@@ -132,7 +132,13 @@ body {
     margin-top: calc(var(--spacing) * 4);
   }
 
-  .markdown ol, ul {
+  .markdown ol {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    padding-inline-start: 40px;
+  }
+
+  .markdown ul {
     margin-block-start: 1em;
     margin-block-end: 1em;
     padding-inline-start: 40px;
