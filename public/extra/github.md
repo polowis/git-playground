@@ -182,6 +182,8 @@ If you use **HTTPS**:
 8. Under `Repository access`, select which repositories you want the token to access. Choose the name of this repo `working-git-example`.
 9. Under Permissions, select which permissions to grant the token. In this case under `Content`, select `read & write` to make sure you have both read & write permission
 
+![git image](/images/token.png)
+
 If you use **SSH**:
 
 1. Generate an SSH key pair on your local machine (if you don’t already have one):
