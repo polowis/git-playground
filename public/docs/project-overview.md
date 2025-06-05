@@ -11,8 +11,4 @@ Use it to double-check that your files (like README.md) are there.
 
 ---
 
-You should be able to see the following files:
-
-- `README.md`
-- `example.js`
-- `.git`
+You should be able to see the `.git ` folder

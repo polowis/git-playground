@@ -36,6 +36,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import ActivityPanel from "@/components/activityPanel";
+import GitPanel from "@/components/gitPanel";
 
 export default function GitPlayground() {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
@@ -85,7 +87,7 @@ export default function GitPlayground() {
       await initializeFileSystem();
       setCommandHistory([]);
       deleteEverything(dir);
-      initializeFileSystem();
+      await initializeFileSystem();
       toast({
         title: "Playground Reset",
         description: "Git playground has been reset to initial state",
@@ -138,6 +140,16 @@ export default function GitPlayground() {
                   </div>
 
                   <div className="flex gap-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          What&apos;s Git?
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl">
+                        <GitPanel/>
+                      </DialogContent>
+                    </Dialog>
                     <Button variant="outline" size="sm" onClick={toggleHelp}>
                       <HelpCircle className="w-4 h-4" />
                       Help
@@ -221,13 +233,16 @@ export default function GitPlayground() {
                       <TabsTrigger value="visualization">Git Graph</TabsTrigger>
                       <TabsTrigger value="files">File Tree</TabsTrigger>
                       <TabsTrigger value="tasks">Learn</TabsTrigger>
-                     
+                      <TabsTrigger value="activity">Activity</TabsTrigger>
                     </TabsList>
                     <TabsContent value="tasks" className="h-full">
                       <TaskView />
                     </TabsContent>
-                    <TabsContent value="best-practice">
-                      <div className="p-4">To be added</div>
+                    <TabsContent
+                      value="activity"
+                      className="flex-1 p-4 overflow-auto"
+                    >
+                      <ActivityPanel />
                     </TabsContent>
 
                     <TabsContent

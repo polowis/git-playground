@@ -118,6 +118,40 @@ body {
     margin-top: calc(var(--spacing) * 4);
   }
 
+   .markdown h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: calc(var(--spacing) * 2);
+    margin-top: calc(var(--spacing) * 4);
+  }
+
+   .markdown h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: calc(var(--spacing) * 3);
+    margin-top: calc(var(--spacing) * 4);
+  }
+
+  .markdown ol, ul {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    padding-inline-start: 40px;
+  }
+
+  .markdown ol {
+    list-style-type: decimal;
+  }
+
+  .markdown a {
+    color:#009fff;
+  }
+
+  .markdown ul, li{
+    margin: unset;
+    padding: unset;
+    list-style-type: unset;
+  }
+
   pre {
     background: #303030;
     overflow: auto;

@@ -10,11 +10,11 @@ Think of it as your control center: everything you type here is how you interact
 ---
 
 ### ▶️ Right Panel — Information & Visual Feedback
-There are three tabs here:
+There are four tabs here:
 
 ---
 
-### 🗂️ Folder Tree
+### 🗂️ File Tree
 
 Shows your project files and folders — just like a file explorer.
 Watch it update as you create, edit, or delete files.
@@ -24,10 +24,14 @@ Watch it update as you create, edit, or delete files.
 This gives you a visual map of your Git history.
 You’ll see commits appear here, branches grow, and your project evolve step-by-step.
 
-### 📘 Learn Panel: Where We Are Now
+### 📘 Learn: Where We Are Now
 
 This tab helps you stay on track.
 It shows what step you're currently on, what just happened, and what to do next.
+
+### ▶️ Activity
+
+This is your next hands-on step. Follow the instructions here to complete your pull request activity
 
 ---
 
@@ -38,4 +42,4 @@ This will unlock the next part of the workshop and guide you forward.
 
 > Tip: You can switch between the tabs anytime to see what’s changed or to review where you are.
 
-Now click on the “Complete” button to move to the next step.
+Now click on the "Complete" button to move to the next step.

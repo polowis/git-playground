@@ -18,7 +18,7 @@ You can think of it like this:
 
 `dev` is where the work happens (possibly messy, but full of ideas).
 
-Changes from `dev` only get merged into `main` when everything’s working as expected
+Changes from `dev` only get merged into `main` when everything's working as expected
 
 ---
 
@@ -54,6 +54,6 @@ To actually work on that branch, you need to switch to it by using `git checkout
 $ git checkout feature-turtle
 ```
 
-Now you’re in your own workspace, free to edit files, try things out, or rewrite everything turtle-related 🐢 — without affecting the rest of the project.
+Now you're in your own workspace, free to edit files, try things out, or rewrite everything turtle-related 🐢 — without affecting the rest of the project.
 
 > The `git branch` command will list the branches you currently have

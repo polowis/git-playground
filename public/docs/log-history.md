@@ -1,6 +1,6 @@
 We should now have a new commit. It's time to take a look at your project history. Git records each commit like a snapshot — and git log lets you scroll through those snapshots.
 
-Too see all the commit so far use `git log`
+To see all the commits so far use `git log`
 
 ```sh
 $ git log

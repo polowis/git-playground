@@ -11,6 +11,8 @@ While on your feature-turtle branch, create a new file called `turtle.txt`:
 $ echo "This is a turtle-exclusive file." > turtle.txt
 ```
 
+### Stage and commit your changes
+
 You write something turtle-y in there, **stage** the changes, and **commit** them. All business as usual.
 
 >  🧠 Remember how to stage and commit?

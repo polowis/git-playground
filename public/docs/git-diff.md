@@ -7,7 +7,7 @@ We will also add some more content to `alice.txt` and learn how to recover from 
 ---
 
 **Step 1: Modify the File**
-Before we begin, a warning: this next step might be a little tricky. We’ll need to add more content to `alice.txt`.
+Before we begin, a warning: this next step might be a little tricky. We'll need to add more content to `alice.txt`.
 
 Open `alice.txt` in your `File Tree` and type your favorite line, or use this as an example:
 
@@ -18,12 +18,12 @@ e.g: I met an interesting turtle while the song on the radio blasted away.
 ---
 
 **Step 2: Save the File**
-Once you've added your content, save the file.
+Once you've added your content, save the file (if you use `echo` command, you can skip this step).
 
 ---
 
 **Step 3: Check the Changes**
-So, what exactly did we change in the file? To see the differences, you can use the git diff command. This will show you exactly what has been modified since the last commit.
+So, what exactly did we change in the file? To see the differences, you can use the `git diff` command. This will show you exactly what has been modified since the last commit.
 
 ```sh
 $ git diff
@@ -45,6 +45,8 @@ index abc1234..def5678 100644
 ```
 
 ---
+
+### Final Step
 
 Now let's add `alice.txt` to the staging area. Do you remember how?
 

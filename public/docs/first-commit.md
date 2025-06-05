@@ -1,8 +1,8 @@
-Now that your file is staged, it’s time to commit it — this is like saving a snapshot of your project at this moment in time.
+Now that your file is staged, it's time to commit it — this is like saving a snapshot of your project at this moment in time.
 
 A commit tells Git:
 
-“These are the exact changes I want to remember.”
+"These are the exact changes I want to remember."
 
 Let’s make your first commit:
 
@@ -15,11 +15,11 @@ $ git commit -m "Add alice.txt with greeting"
 ---
 
 ### ✅ What Just Happened?
-When you run git commit, Git takes everything you staged (with `git add`) and stores a snapshot of those changes in the repository’s history.
+When you run `git commit`, Git takes everything you staged (with `git add`) and stores a snapshot of those changes in the repository's history.
 
 It's like saying:
 
-> Yes, I’m happy with this version. Let’s save it.
+> Yes, I'm happy with this version. Let's save it.
 
 
-Don’t forget to check the Git graph in your interface to see your commit visually — it’s a great way to understand your project's history at a glance!
+Don't forget to check the Git graph in your interface to see your commit visually — it's a great way to understand your project's history at a glance!

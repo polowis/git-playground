@@ -27,5 +27,5 @@ $ git reset alice.txt
 ### 🔍 Check Again with `git status`
 
 Confirm it's no longer staged by checking the `status`
-You'll see that `alice.txt` is now listed under 'Changes not staged for commit.' That means your edit is still there — it’s just not queued up to be saved yet
+You'll see that `alice.txt` is now listed under 'Changes not staged for commit.' That means your edit is still there — it's just not queued up to be saved yet
 

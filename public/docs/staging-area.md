@@ -31,12 +31,12 @@ Git uses a two-step process to save your changes:
 - Staging (with `git add`)
 - Committing (with `git commit`)
 
-Before Git can save your changes in history, you have to stage them — kind of like saying, “Hey Git, I want to include these changes in the next save.” Let’s do that now.
+Before Git can save your changes in history, you have to stage them — kind of like saying, "Hey Git, I want to include these changes in the next save." Let’s do that now.
 
 Let's add your new file to the staging area
 
 ```sh
-git add alice.txt
+$ git add alice.txt
 ```
 
 ### 🔍 Check What’s Staged

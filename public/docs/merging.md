@@ -2,10 +2,10 @@ So far, you've been working in your own little turtle world on the `feature-turt
 
 Now, let's say your changes are ready. The turtle file is tested, polished, and you're happy with it. Time to bring those changes back into the `master` branch so everyone (and everything) else can see it too.
 
-That’s where merging comes in.
+That's where merging comes in.
 
 ### 🔄 Step 1: Switch to master
-Before merging, make sure you're on the branch you want to merge into — in this case, that’s master.
+Before merging, make sure you're on the branch you want to merge into — in this case, that's master.
 
 ```sh
 $ git checkout master
